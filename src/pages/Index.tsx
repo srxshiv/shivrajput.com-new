@@ -5,16 +5,12 @@ import { ProjectsSection } from "@/components/ProjectsSection";
 import { ExperienceSection } from "@/components/ExperienceSection";
 import { ContactSection } from "@/components/ContactSection";
 import { Welcome } from "@/components/Welcome";
-import { FlowingText } from "@/components/FlowingText";
 
 const Index = () => {
   const [welcomeComplete, setWelcomeComplete] = useState(false);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
-      {/* Background animation */}
-      <FlowingText />
-
       {/* Main content - always visible under Welcome */}
       <div className="relative z-0 backdrop-blur-sm">
         <Navigation />

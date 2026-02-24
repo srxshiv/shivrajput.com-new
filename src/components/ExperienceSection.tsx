@@ -1,177 +1,119 @@
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import { Building, Calendar, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
+
+const transitionEase = [0.16, 1, 0.3, 1];
 
 const experiences = [
   {
     company: "Messy Programmer",
     position: "AI Fullstack Developer",
-    duration: "Jan 2026 - Present",
-    location: "Cooch Behar, West Bengal",
+    duration: "Jan 2026 — Present",
+    location: "Cooch Behar, WB",
     description:
       "Building high-performance AI-driven fullstack applications end-to-end using a TypeScript-first stack with modern cloud and automation tooling.",
     achievements: [
-      "Engineered scalable fullstack apps using Next.js, React, Node.js, basically the full TypeScript stack, with Dockerized services for consistent deployments.",
-      "Developed backend systems with PostgreSQL, MongoDB, and Firebase, implementing secure OAuth 2.0 authentication and data workflows.",
+      "Engineered scalable fullstack apps using Next.js, React, Node.js with Dockerized services for consistent deployments.",
+      "Developed backend systems with PostgreSQL, MongoDB, and Firebase, implementing secure OAuth 2.0 authentication.",
       "Developed complex workflow automations using n8n, Zapier, and Pipedream with custom APIs and webhooks.",
       "Integrated GoHighLevel ecosystems and built internal tools using Retool, Payload CMS, and Directus.",
-      "Built and deployed cross-platform mobile apps using React Native."
     ],
     tech: [
-      "Next.js",
-      "React",
-      "Node.js",
-      "TypeScript",
-      "PostgreSQL",
-      "MongoDB",
-      "Firebase",
-      "Docker",
-      "OAuth 2.0",
-      "n8n",
-      "Zapier",
-      "Pipedream",
-      "GoHighLevel",
-      "Retool",
-      "Payload CMS",
-      "Directus",
-      "React Native"
+      "Next.js", "TypeScript", "Node.js", "PostgreSQL", "n8n", "Zapier", "React Native"
     ],
   },
   {
     company: "Harshey Health Care Hospital",
     position: "Full Stack Developer",
-    duration: "Dec 2022 - Jan 2023",
+    duration: "Dec 2022 — Jan 2023",
     location: "Remote",
     description:
-      "Engineered a comprehensive Clinic Management System supporting 2–3 doctors and managing 200+ patient records to digitize daily operations.",
+      "Engineered a comprehensive Clinic Management System supporting multiple doctors and managing 200+ patient records to digitize daily operations.",
     achievements: [
       "Implemented secure token-based authentication for patient management, significantly reducing manual scheduling time.",
       "Designed RESTful APIs to optimize database operations for medical histories and billing.",
-      "Achieved sub-200ms data retrieval speeds through optimized MongoDB queries."
+      "Achieved sub-200ms data retrieval speeds through optimized MongoDB queries.",
     ],
-    tech: ["ReactJS", "Express.js", "MongoDB", "Node.js", "REST APIs"],
+    tech: ["React", "Express", "MongoDB", "Node.js", "REST APIs"],
   },
 ];
 
 export function ExperienceSection() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  // Maps the scroll progress to an X translation to slide text across the screen
-  const xParallax = useTransform(scrollYProgress, [0, 1], ["-10%", "30%"]);
-
   return (
-    <section
-      id="experience"
-      ref={ref}
-      className="relative min-h-[100vh] py-32 px-6 overflow-hidden"
-    >
-      <div className="max-w-4xl mx-auto">
-        {/* Title Section */}
-        <motion.h2
-          className="pointer-events-none absolute left-0 top-10 text-[30vw] md:text-[20vw] font-heading3 text-black/15 dark:text-white/15 z-0 select-none tracking-tight leading-none whitespace-nowrap"
-          style={{
-            x: xParallax
-          }}
-        >
-          EXPERIENCE
-        </motion.h2>
+    <section id="experience" className="relative py-32 px-6 md:px-24 max-w-7xl mx-auto">
+      
+      {/* Section Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: transitionEase }}
+        className="mb-20"
+      >
+        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-4">
+          Experience.
+        </h2>
+        <p className="text-zinc-600 dark:text-zinc-400 max-w-xl text-lg">
+          My professional journey across development and engineering.
+        </p>
+      </motion.div>
 
-        <div className="relative md:mt-[10rem] mt-12 z-10">
-          {/* Timeline line */}
-          <div className="absolute left-8 md:left-1/2 transform md:-translate-x-1/2 w-0.5 h-full bg-border"></div>
+      {/* The Asymmetrical Grid Layout */}
+      <div className="flex flex-col gap-16 md:gap-24">
+        {experiences.map((exp, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: transitionEase, delay: index * 0.1 }}
+            className="group grid grid-cols-1 md:grid-cols-[250px_1fr] lg:grid-cols-[300px_1fr] gap-6 md:gap-12"
+          >
+            {/* Left Column: Meta Data */}
+            <div className="flex flex-col md:pr-8">
+              <span className="text-zinc-400 dark:text-zinc-500 font-mono text-sm tracking-tight mb-2">
+                {exp.duration}
+              </span>
+              <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 tracking-tight">
+                {exp.position}
+              </h3>
+              <span className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
+                {exp.location}
+              </span>
+            </div>
 
-          {experiences.map((exp, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.8, delay: index * 0.2 }}
-              className={`relative flex items-center mb-16 ${
-                index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-              }`}
-            >
-              {/* Timeline dot */}
-              <div className="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white dark:border-gray-900 shadow-lg z-10"></div>
+            {/* Right Column: Content */}
+            <div className="flex flex-col gap-6">
+              <h4 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+                {exp.company}
+              </h4>
+              
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-base md:text-lg">
+                {exp.description}
+              </p>
 
-              {/* Content */}
-              <div
-                className={`flex-1 ml-16 md:ml-0 ${
-                  index % 2 === 0 ? "md:pr-8" : "md:pl-8"
-                }`}
-              >
-                <motion.div
-                  whileHover={{ scale: 1.02, y: -5 }}
-                  className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300"
-                >
-                  <div className="flex flex-wrap items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">
-                        {exp.position}
-                      </h3>
-                      <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium mb-2">
-                        <Building size={16} />
-                        {exp.company}
-                      </div>
-                    </div>
-                    <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                      <div className="flex items-center gap-1 mb-1">
-                        <Calendar size={14} />
-                        {exp.duration}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <MapPin size={14} />
-                        {exp.location}
-                      </div>
-                    </div>
-                  </div>
+              {/* Minimalist Bullet Points */}
+              <ul className="flex flex-col gap-3">
+                {exp.achievements.map((achievement, i) => (
+                  <li key={i} className="flex items-start gap-4 text-zinc-600 dark:text-zinc-400">
+                    <span className="mt-2.5 w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 shrink-0" />
+                    <span className="leading-relaxed">{achievement}</span>
+                  </li>
+                ))}
+              </ul>
 
-                  <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed mb-6">
-                    {exp.description}
-                  </p>
-
-                  <div className="mb-6">
-                    <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3 uppercase tracking-wide">
-                      Key Achievements
-                    </h4>
-                    <ul className="space-y-2">
-                      {exp.achievements.map((achievement, i) => (
-                        <li
-                          key={i}
-                          className="flex items-start gap-2 text-zinc-600 dark:text-zinc-300"
-                        >
-                          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-                          {achievement}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3 uppercase tracking-wide">
-                      Technologies
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {exp.tech.map((tech) => (
-                        <span
-                          key={tech}
-                          className="px-3 py-1 text-sm bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-full border border-zinc-200 dark:border-zinc-700"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
+              {/* Seamless Tech Pills matching the Projects section */}
+              <div className="flex flex-wrap gap-2 mt-4">
+                {exp.tech.map((tech) => (
+                  <span
+                    key={tech}
+                    className="px-3 py-1 text-sm font-medium rounded-full bg-zinc-100 text-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 transition-colors group-hover:border-zinc-300 dark:group-hover:border-zinc-700"
+                  >
+                    {tech}
+                  </span>
+                ))}
               </div>
-            </motion.div>
-          ))}
-        </div>
+            </div>
+          </motion.div>
+        ))}
       </div>
     </section>
   );
