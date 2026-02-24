@@ -30,10 +30,13 @@ export function Navigation() {
       { rootMargin: "-25% 0px -25% 0px", threshold: 0.1 } 
     );
 
-    navItems.forEach(({ href }) => {
-      const el = document.querySelector(href);
-      if (el) observer.observe(el);
-    });
+    // Small timeout ensures sections are rendered before observing
+    setTimeout(() => {
+      navItems.forEach(({ href }) => {
+        const el = document.querySelector(href);
+        if (el) observer.observe(el);
+      });
+    }, 100);
 
     return () => observer.disconnect();
   }, []);
@@ -145,12 +148,16 @@ export function Navigation() {
 
       {/* ─── Mobile Nav (Bottom Dock) ─── */}
       <motion.nav
-        initial={{ y: 100, opacity: 0, filter: "blur(10px)" }}
-        animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-        transition={{ duration: 1, ease: customEase, delay: 0.2 }}
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 md:hidden flex items-center gap-2 w-[90%] max-w-sm"
+        initial={{ y: 120, opacity: 0, filter: "blur(10px)" }}
+        animate={{ 
+          y: isVisible ? 0 : 120, 
+          opacity: isVisible ? 1 : 0, 
+          filter: isVisible ? "blur(0px)" : "blur(10px)" 
+        }}
+        transition={{ duration: 0.8, ease: customEase }}
+        className="fixed bottom-6 inset-x-0 mx-auto z-50 md:hidden flex items-center justify-center gap-2 w-[92%] max-w-[24rem]"
       >
-        <div className="relative flex-1 flex items-center justify-between px-2 py-2 rounded-full bg-white/60 dark:bg-[#0a0a0a]/60 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+        <div className="relative flex-1 flex items-center justify-between px-1.5 py-1.5 rounded-full bg-white/70 dark:bg-[#0a0a0a]/70 backdrop-blur-2xl border border-black/5 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
           {navItems.map((item) => {
             const sectionId = item.href.substring(1);
             const isActive = sectionId === activeSection;
@@ -159,10 +166,10 @@ export function Navigation() {
               <button
                 key={item.label}
                 onClick={() => scrollToSection(item.href, sectionId)}
-                className="relative px-3 py-2.5 rounded-full"
+                className="relative flex-1 py-3 px-1 rounded-full flex justify-center items-center"
               >
                 <span
-                  className={`relative z-10 text-[10px] tracking-wide font-medium uppercase whitespace-nowrap transition-colors duration-500 ${
+                  className={`relative z-10 text-[11px] tracking-wide font-medium whitespace-nowrap transition-colors duration-500 ${
                     isActive
                       ? "text-zinc-900 dark:text-zinc-50"
                       : "text-zinc-500 dark:text-zinc-500"
@@ -174,7 +181,7 @@ export function Navigation() {
                 {isActive && (
                   <motion.div
                     layoutId="mobile-nav-indicator"
-                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-zinc-900 dark:bg-zinc-50"
+                    className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-zinc-900 dark:bg-zinc-50"
                     transition={{
                       type: "spring",
                       stiffness: 400,
@@ -188,7 +195,7 @@ export function Navigation() {
         </div>
 
         {/* Mobile Theme Toggle Satellite */}
-        <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-white/60 dark:bg-[#0a0a0a]/60 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+        <div className="flex-shrink-0 flex items-center justify-center w-[52px] h-[52px] rounded-full bg-white/70 dark:bg-[#0a0a0a]/70 backdrop-blur-2xl border border-black/5 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
             <ThemeToggle />
         </div>
       </motion.nav>

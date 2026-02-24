@@ -53,17 +53,7 @@ const projects = [
     techstack: ["Next.js", "MongoDB", "Tailwind"],
     github: "https://github.com/srxshiv/BrokeNoMore.git",
     live: "https://broke-no-more-seven.vercel.app",
-  },
-  {
-    title: "Github Profile Analyzer",
-    image:
-      "https://res.cloudinary.com/ddyehcaeo/image/upload/v1753450510/Screenshot_2025-07-25_at_7.04.02_PM_kqoyag.png",
-    description:
-      "A visual tool mapping user repositories and contribution histories into interactive, readable data charts.",
-    techstack: ["React", "TypeScript", "Tailwind"],
-    github: "https://github.com/srxshiv/Github-Profile-Analyzer.git",
-    live: "https://gitprofileanalyzer.vercel.app",
-  },
+  }
 ];
 
 export function ProjectsSection() {
@@ -77,37 +67,33 @@ export function ProjectsSection() {
   return (
     <section
       id="projects"
-      className="relative py-24 md:py-32 px-6 md:px-24 max-w-7xl mx-auto overflow-hidden"
+      className="relative min-h-screen py-32 md:py-48 px-6 md:px-12 lg:px-24 max-w-7xl mx-auto overflow-hidden"
     >
-
-      <div className="relative z-10">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-10%" }}
+        transition={{ duration: 0.8, ease: transitionEase }}
+        className="relative z-10 w-full max-w-6xl mx-auto flex flex-col h-full justify-between"
+      >
         {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: transitionEase }}
-          className="mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-4">
+        <div className="mb-20 md:mb-32">
+          <h1 className="text-6xl md:text-8xl font-medium tracking-tighter mb-6 text-zinc-900 dark:text-zinc-50">
             Selected Works.
-          </h2>
-          <p className="text-zinc-500 dark:text-zinc-400 max-w-md">
-            Full-stack applications, desktop utilities, and interfaces.
-          </p>
-        </motion.div>
+          </h1>
+        </div>
 
         {/* Desktop: Split Panel Layout */}
-        <div className="hidden md:grid md:grid-cols-[1fr_1.2fr] gap-12 items-start">
+        <div className="hidden md:grid md:grid-cols-[1fr_1.2fr] gap-16 items-start">
           {/* Left — Project List */}
           <nav aria-label="Project list" className="flex flex-col">
             {projects.map((project, index) => (
               <button
                 key={project.title}
-                onClick={() => handleSelect(index)}
+                onClick={() => window.open(project.live ?? project.github)}
                 onMouseEnter={() => handleSelect(index)}
                 aria-current={index === activeIndex ? "true" : undefined}
-                className={`group relative text-left py-5 transition-all duration-500 border-b border-zinc-200 dark:border-zinc-800 first:border-t ${
+                className={`group relative text-left py-6 transition-all duration-500 border-b border-zinc-200 dark:border-zinc-800 first:border-t ${
                   index === activeIndex
                     ? "opacity-100"
                     : "opacity-40 hover:opacity-70"
@@ -115,19 +101,19 @@ export function ProjectsSection() {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-baseline gap-4">
-                    <span className="text-xs font-mono text-zinc-400 dark:text-zinc-500 tabular-nums">
+                    <span className="text-sm font-mono text-zinc-400 dark:text-zinc-500 tabular-nums">
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <span className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+                    <span className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
                       {project.title}
                     </span>
                   </div>
                   <ArrowUpRight
-                    size={16}
+                    size={20}
                     className={`text-zinc-400 dark:text-zinc-500 transition-all duration-300 ${
                       index === activeIndex
                         ? "opacity-100 translate-x-0"
-                        : "opacity-0 -translate-x-2"
+                        : "opacity-0 -translate-x-4"
                     }`}
                   />
                 </div>
@@ -142,11 +128,11 @@ export function ProjectsSection() {
                   transition={{ duration: 0.4, ease: transitionEase }}
                   className="overflow-hidden"
                 >
-                  <div className="flex gap-3 mt-2 ml-9">
+                  <div className="flex flex-wrap gap-3 mt-4 ml-10">
                     {project.techstack.map((tech) => (
                       <span
                         key={tech}
-                        className="text-xs font-medium text-zinc-500 dark:text-zinc-500"
+                        className="text-sm font-medium text-zinc-500 dark:text-zinc-500"
                       >
                         {tech}
                       </span>
@@ -158,66 +144,67 @@ export function ProjectsSection() {
           </nav>
 
           {/* Right — Preview Panel */}
-          <div className="sticky top-32">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={active.title}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.5, ease: transitionEase }}
-                className="flex flex-col gap-6"
-              >
-                {/* Image */}
-                <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                  <img
-                    src={active.image}
-                    alt={`Screenshot of ${active.title}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                {/* Details */}
-                <div className="flex flex-col gap-4">
-                  <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-[15px]">
-                    {active.description}
-                  </p>
-
-                  {/* Links */}
-                  <div className="flex items-center gap-4">
-                    {active.github && (
-                      <a
-                        href={active.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`View ${active.title} source on GitHub`}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-50 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-                      >
-                        <Github size={16} />
-                        Source
-                      </a>
-                    )}
-                    {active.live && (
-                      <a
-                        href={active.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`Visit ${active.title} live site`}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-50 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-                      >
-                        <ExternalLink size={16} />
-                        Live
-                      </a>
-                    )}
+          <div className="sticky top-40">
+            <AnimatePresence mode="popLayout">
+              {/* FIX: Ensure `active` exists before rendering the desktop preview to prevent mobile crashes */}
+              {active && (
+                <motion.div
+                  key={active.title}
+                  initial={{ opacity: 0, filter: "blur(10px)", y: 20 }}
+                  animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                  exit={{ opacity: 0, filter: "blur(10px)", y: -20 }}
+                  transition={{ duration: 0.5, ease: transitionEase }}
+                  className="flex flex-col gap-8"
+                >
+                  {/* Image */}
+                  <div className="relative aspect-[16/10] rounded-3xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl">
+                    <img
+                      src={active.image}
+                      alt={`Screenshot of ${active.title}`}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                </div>
-              </motion.div>
+
+                  {/* Details */}
+                  <div className="flex flex-col gap-5 px-2">
+                    <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-lg">
+                      {active.description}
+                    </p>
+
+                    {/* Links */}
+                    <div className="flex items-center gap-6">
+                      {active.github && (
+                        <a
+                          href={active.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-base font-medium text-zinc-900 dark:text-zinc-50 hover:text-zinc-500 transition-colors"
+                        >
+                          <Github size={18} />
+                          Source
+                        </a>
+                      )}
+                      {active.live && (
+                        <a
+                          href={active.live}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-base font-medium text-zinc-900 dark:text-zinc-50 hover:text-zinc-500 transition-colors"
+                        >
+                          <ExternalLink size={18} />
+                          Live
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
         </div>
 
-        {/* Mobile: Compact Accordion Cards */}
-        <div className="md:hidden flex flex-col gap-3">
+        {/* Mobile: Minimal Accordion List */}
+        <div className="md:hidden flex flex-col">
           {projects.map((project, index) => (
             <MobileProjectCard
               key={project.title}
@@ -230,7 +217,7 @@ export function ProjectsSection() {
             />
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
@@ -247,21 +234,19 @@ function MobileProjectCard({
   onToggle: () => void;
 }) {
   return (
-    <motion.div
-      layout
-      transition={{ duration: 0.4, ease: transitionEase }}
-      className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-950"
-    >
+    <div className="border-b border-zinc-200 dark:border-zinc-800 first:border-t">
+      {/* Main Toggle Header */}
       <button
         onClick={onToggle}
-        aria-expanded={isOpen}
-        className="w-full flex items-center justify-between px-5 py-4 text-left"
+        className={`w-full flex items-center justify-between py-6 text-left transition-opacity duration-300 ${
+          isOpen ? "opacity-100" : "opacity-40"
+        }`}
       >
-        <div className="flex items-baseline gap-3">
+        <div className="flex items-baseline gap-4">
           <span className="text-xs font-mono text-zinc-400 dark:text-zinc-500 tabular-nums">
             {String(index + 1).padStart(2, "0")}
           </span>
-          <span className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <span className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
             {project.title}
           </span>
         </div>
@@ -269,76 +254,79 @@ function MobileProjectCard({
           animate={{ rotate: isOpen ? 45 : 0 }}
           transition={{ duration: 0.3, ease: transitionEase }}
         >
-          <ArrowUpRight
-            size={16}
-            className="text-zinc-400 dark:text-zinc-500"
-          />
+          <ArrowUpRight size={18} className="text-zinc-400" />
         </motion.div>
       </button>
 
+      {/* Expanded Content */}
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: transitionEase }}
+            transition={{ duration: 0.5, ease: transitionEase }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 flex flex-col gap-4">
-              <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+            <div className="pb-8 flex flex-col gap-6">
+              <motion.div 
+                initial={{ scale: 0.95 }}
+                animate={{ scale: 1 }}
+                className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
+              >
                 <img
                   src={project.image}
-                  alt={`Screenshot of ${project.title}`}
+                  alt={project.title}
                   className="w-full h-full object-cover"
                 />
-              </div>
+              </motion.div>
 
-              <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
-                {project.description}
-              </p>
+              <div className="flex flex-col gap-4 px-1">
+                <p className="text-zinc-500 dark:text-zinc-400 text-[15px] leading-relaxed">
+                  {project.description}
+                </p>
 
-              <div className="flex flex-wrap gap-2">
-                {project.techstack.map((tech) => (
-                  <span
-                    key={tech}
-                    className="text-xs font-medium text-zinc-500 dark:text-zinc-500"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
+                {/* Minimalist Tech Badges */}
+                <div className="flex flex-wrap gap-x-4 gap-y-2">
+                  {project.techstack.map((tech) => (
+                    <span
+                      key={tech}
+                      className="text-xs font-medium text-zinc-400 dark:text-zinc-500"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
 
-              <div className="flex items-center gap-4 pt-1">
-                {project.github && (
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`View ${project.title} source on GitHub`}
-                    className="inline-flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-50"
-                  >
-                    <Github size={15} />
-                    Source
-                  </a>
-                )}
-                {project.live && (
-                  <a
-                    href={project.live}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Visit ${project.title} live site`}
-                    className="inline-flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-50"
-                  >
-                    <ExternalLink size={15} />
-                    Live
-                  </a>
-                )}
+                <div className="flex items-center gap-6 pt-2">
+                  {project.github && (
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-50"
+                    >
+                      <Github size={16} />
+                      Source
+                    </a>
+                  )}
+                  {project.live && (
+                    <a
+                      href={project.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-50"
+                    >
+                      <ExternalLink size={16} />
+                      Live
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

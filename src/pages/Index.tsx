@@ -55,7 +55,6 @@ const Index = () => {
     <div className="relative min-h-screen overflow-x-hidden selection:bg-zinc-900 selection:text-white dark:selection:bg-zinc-50 dark:selection:text-zinc-900">
       
       {/* The Dynamic Background Layer */}
-      <SpacetimeFabric />
 
       {/* Main content layer */}
       <div className="relative z-10">
