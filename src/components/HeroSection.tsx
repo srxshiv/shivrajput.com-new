@@ -219,7 +219,7 @@ export function HeroSection() {
                 initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -15, filter: "blur(4px)" }}
-                transition={{ duration: 0.4, ease: customEase }}
+                transition={{ duration: isMobile ? 0.8 : 0.4, ease: customEase }}
                 className="flex flex-col relative z-20 lg:pl-12 xl:pl-24 pt-2 mt-4 md:mt-0" 
               >
                 <div className="flex flex-col md:flex-row items-start gap-4 md:gap-8 mb-8">

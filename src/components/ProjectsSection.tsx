@@ -57,7 +57,7 @@ const projects = [
 ];
 
 export function ProjectsSection() {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState();
   const active = projects[activeIndex];
 
   const handleSelect = useCallback((index: number) => {
