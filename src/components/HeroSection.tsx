@@ -15,7 +15,7 @@ const socialLinks = [
 export function HeroSection() {
   return (
     // Replaced -z-10 with z-0. This ensures elements stay clickable!
-    <section className="sticky top-0 h-screen w-full flex flex-col justify-center items-center px-6 md:px-12 z-0 overflow-hidden">
+    <section id="home" className="relative h-screen w-full flex flex-col justify-center items-center px-6 md:px-12 z-0 overflow-hidden">
       
       {/* Centered Main Text */}
       <motion.div

@@ -57,7 +57,6 @@ src/
     Footer.tsx
     GlassBack.tsx
     HeroSection.tsx
-    MainContent.tsx
     Navigation.tsx
     ProjectsSection.tsx
     Services.tsx
@@ -93,310 +92,6 @@ vite.config.ts
 
 <files>
 This section contains the contents of the repository's files.
-
-<file path="src/components/Footer.tsx">
-export default function Footer (){
-
-    return         <footer className="py-12 px-6 border-t border-zinc-200/50 dark:border-zinc-800/50">
-          <div className="max-w-6xl mx-auto flex flex-col items-center justify-center gap-2">
-            <div className="w-6 h-px bg-zinc-300 dark:bg-zinc-700 mb-4" />
-            <p className="text-xs tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 font-medium">
-              © {new Date().getFullYear()} Shiv.
-            </p>
-            <p className="text-[10px] tracking-wide text-zinc-300 dark:text-zinc-600">
-              Engineered with precision.
-            </p>
-          </div>
-        </footer>
-}
-</file>
-
-<file path="src/components/GlassBack.tsx">
-import { motion } from "framer-motion";
-
-export const GlassmorphicBackdrop = ({ isFixed = false }: { isFixed?: boolean }) => {
-  return (
-    // 1. THE ROOT: Must be completely transparent so the Hero shows through.
-    <div 
-      className={`
-        ${isFixed ? "fixed" : "absolute"} 
-        inset-0 z-0 pointer-events-none overflow-hidden bg-transparent
-      `}
-    >
-      {/* 2. THE ARC GRADIENTS: Floating color orbs using high-perf radial gradients */}
-      <motion.div
-        animate={{ x: [0, 50, 0], y: [0, -50, 0], scale: [1, 1.1, 1] }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full transform-gpu bg-[radial-gradient(circle_at_center,rgba(129,140,248,0.4)_0%,transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.3)_0%,transparent_70%)]"
-      />
-      
-      <motion.div
-        animate={{ x: [0, -40, 0], y: [0, 60, 0], scale: [1, 1.2, 1] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full transform-gpu bg-[radial-gradient(circle_at_center,rgba(251,113,133,0.3)_0%,transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(225,29,72,0.25)_0%,transparent_70%)]"
-      />
-      
-      <motion.div
-        animate={{ x: [0, 30, 0], y: [0, 20, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute top-[20%] right-[20%] w-[40vw] h-[40vw] rounded-full transform-gpu bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.3)_0%,transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(8,145,178,0.25)_0%,transparent_70%)]"
-      />
-
-      {/* 3. THE FROSTED PANE: This blurs BOTH the orbs AND the Hero section underneath. */}
-      {/* Adding a subtle top border creates the physical "edge" of the glass card. */}
-      <div className="absolute inset-0 bg-white/40 dark:bg-[#0a0a0a]/40 backdrop-blur-xl transform-gpu border-t border-white/50 dark:border-white/10" />
-    </div>
-  );
-};
-</file>
-
-<file path="src/components/MainContent.tsx">
-import { ProjectsSection } from "@/components/ProjectsSection";
-import { ExperienceSection } from "@/components/ExperienceSection";
-import { ContactSection } from "@/components/ContactSection";
-import { Services } from "@/components/Services";
-import Footer from "@/components/Footer";
-import { GlassmorphicBackdrop } from "./GlassBack";
-
-export const MainContent = () => {
-    return (
-        // CRITICAL FIX: Added 'relative', 'z-20', and 'overflow-hidden'.
-        // This traps the absolute background inside this wrapper and sits it on top of the Hero.
-        // Added 'rounded-t-[3rem]' so it looks like a sleek card sliding over your Hero.
-        <div className="relative z-20 overflow-hidden rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
-            
-            {/* The backdrop is now perfectly contained inside this block */}
-            <GlassmorphicBackdrop />
-            
-            {/* Because the background is absolute, your content needs to be relative z-10 
-              so it sits on top of the glass, not underneath it.
-            */}
-            <div className="relative z-10">
-                <Services />
-                <ProjectsSection />
-                <ExperienceSection />
-                <ContactSection />
-                <Footer />
-            </div>
-            
-        </div>
-    );
-};
-</file>
-
-<file path="src/components/Services.tsx">
-"use client";
-
-import { ArrowUpRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
-
-const customEase = [0.25, 1, 0.5, 1];
-
-const services = [
-  {
-    id: "founders",
-    label: "Founders",
-    title: "Product Development",
-    description: "Transforming raw concepts into market-ready platforms. I architect and build scalable MVPs using the modern TypeScript ecosystem designed to ship fast and survive scale.",
-    deliverables: ["End-to-End Software Development", "Robust API Designs", "Scalable Database & Auth Architecture"],
-    cta: "Contact Me",
-    tag: "01",
-  },
-  {
-    id: "sme",
-    label: "Agencies & SMEs",
-    title: "AI & Workflow Scaling",
-    description: "Eliminate manual bottlenecks and scale your operations. I integrate complex automation workflows and deploy AI agents that handle customer engagement around the clock.",
-    deliverables: ["Custom n8n, Make, Pipedream & Zapier", "AI Voice & Chatbot Agents", "CRM & GoHighLevel Integrations"],
-    cta: "Contact Me",
-    tag: "02",
-  },
-  {
-    id: "teams",
-    label: "Established Teams",
-    title: "Custom Integrations",
-    description: "Break down data silos. I connect your fragmented tools and build bespoke internal dashboards, allowing your team to operate from a single source of truth.",
-    deliverables: ["Custom OAuth 2.0 Gateways", "Internal Tooling (Retool / Payload CMS)", "Third-Party API SDK Development"],
-    cta: "Contact Me",
-    tag: "03",
-  },
-];
-
-export function Services() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  const active = services[activeIndex];
-  const itemHeight = 60; 
-  const yOffset = -(activeIndex * itemHeight);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % services.length);
-    }, 4500); 
-    return () => clearInterval(timer);
-  }, [activeIndex]);
-
-  return (
-    // The background color is mandatory here so it obscures the sticky hero beneath it
-    <section 
-      id="services" 
-      className="relative z-10 min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-16 xl:px-24 py-32"
-    >
-      <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 lg:gap-24 items-start">
-        
-        {/* LEFT COLUMN: The Target Selector */}
-        <div className="lg:col-span-5 relative">
-          <div className="flex flex-col md:flex-row md:items-start gap-3 md:gap-6 mt-4 lg:mt-[5rem] relative">
-            <span className="text-xl md:text-4xl font-light text-zinc-400 dark:text-zinc-600 flex md:h-[60px] items-center shrink-0">
-              For
-            </span>
-            
-            <div className="relative h-auto md:h-[60px] w-full z-10 overflow-visible">
-              <motion.div 
-                className="relative md:absolute top-0 left-0 flex flex-col w-full gap-2 md:gap-0"
-                animate={{ y: isMobile ? 0 : yOffset }}
-                transition={{ duration: 0.6, ease: customEase }}
-              >
-                {services.map((s, index) => {
-                  const isActive = index === activeIndex;
-                  return (
-                    <button
-                      key={s.id}
-                      onClick={() => setActiveIndex(index)}
-                      className="text-left group flex items-center h-auto md:h-[60px] w-full py-1.5 md:py-0"
-                    >
-                      <motion.span
-                        animate={{
-                          opacity: isActive ? 1 : 0.25, 
-                          scale: isActive ? 1 : 0.85,
-                          x: isActive ? (isMobile ? 12 : 0) : (isMobile ? 0 : -10),
-                        }}
-                        transition={{ duration: 0.5, ease: customEase }}
-                        className={`block text-2xl md:text-4xl lg:text-5xl tracking-tight transition-colors duration-500 origin-left whitespace-nowrap font-medium ${
-                          isActive
-                            ? "text-zinc-900 dark:text-zinc-50"
-                            : "text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-300"
-                        }`}
-                      >
-                        {s.label}
-                      </motion.span>
-                    </button>
-                  );
-                })}
-              </motion.div>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN: The Value Proposition Panel */}
-        <div className="lg:col-span-7 relative min-h-[400px]"> 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={active.id}
-              initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -15, filter: "blur(4px)" }}
-              transition={{ duration: isMobile ? 0.8 : 0.4, ease: customEase }}
-              className="flex flex-col relative z-20 lg:pl-12 xl:pl-24 pt-2 mt-4 md:mt-0" 
-            >
-              <div className="flex flex-col md:flex-row items-start gap-4 md:gap-8 mb-8">
-                <span className="text-[10px] font-mono tracking-[0.2em] text-zinc-400 dark:text-zinc-500 md:mt-2.5 hidden md:block">
-                  {active.tag}
-                </span>
-                
-                <div className="flex-1">
-                  <h3 className="text-2xl md:text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 mb-4 md:mb-6 leading-tight flex items-center gap-3">
-                    {active.title}
-                  </h3>
-                  <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-sm md:text-base font-light mb-8 max-w-xl">
-                    {active.description}
-                  </p>
-
-                  <ul className="flex flex-col gap-3 mb-10 md:mb-12">
-                    {active.deliverables.map((item, i) => (
-                      <motion.li 
-                        key={i}
-                        initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.15 * i + 0.2, duration: 0.5, ease: customEase }}
-                        className="flex items-center gap-3 text-[13px] md:text-sm text-zinc-700 dark:text-zinc-300 font-light tracking-wide"
-                      >
-                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-800 dark:bg-zinc-200 opacity-60 shrink-0" />
-                        {item}
-                      </motion.li>
-                    ))}
-                  </ul>
-
-                  <motion.a
-                    href="#contact"
-                    className="group inline-flex items-center justify-center gap-3 px-8 py-3.5 md:py-4 bg-zinc-900 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 text-[11px] md:text-xs font-semibold tracking-[0.15em] uppercase rounded-full hover:scale-105 active:scale-95 transition-all duration-300 w-full md:w-max"
-                  >
-                    {active.cta}
-                    <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </motion.a>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-      </div>
-    </section>
-  );
-}
-</file>
-
-<file path="src/components/SpaceTimeFabric.tsx">
-import { motion } from "framer-motion";
-
-
-export default function SpacetimeFabric  ({ isFixed = false }: { isFixed?: boolean }) {
-    return (
-      <div 
-        className={`
-          ${isFixed ? "fixed" : "absolute"} 
-          inset-0 z-0 pointer-events-none overflow-hidden bg-[#fafafa] dark:bg-[#0a0a0a] transition-colors duration-700
-        `}
-      >
-        {/* 1. Ambient Gravity Wells (Breathing Orbs) */}
-        <motion.div
-          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-15%] left-[-10%] w-[50vw] h-[50vw] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[120px] bg-zinc-300 dark:bg-zinc-800/30"
-        />
-        <motion.div
-          animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[150px] bg-zinc-200 dark:bg-zinc-900/30"
-        />
-  
-        {/* 2. The Fabric Grid */}
-        <div 
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, rgba(128, 128, 128, 0.08) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(128, 128, 128, 0.08) 1px, transparent 1px)
-            `,
-            backgroundSize: "60px 60px",
-            WebkitMaskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, #000 20%, transparent 100%)",
-            maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, #000 20%, transparent 100%)",
-          }}
-        />
-      </div>
-    );
-  };
-</file>
 
 <file path="src/components/ui/button.tsx">
 import * as React from "react"
@@ -690,6 +385,276 @@ export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
 import { useToast, toast } from "@/hooks/use-toast";
 
 export { useToast, toast };
+</file>
+
+<file path="src/components/Footer.tsx">
+export default function Footer (){
+
+    return         <footer className="py-12 px-6 border-t border-zinc-200/50 dark:border-zinc-800/50">
+          <div className="max-w-6xl mx-auto flex flex-col items-center justify-center gap-2">
+            <div className="w-6 h-px bg-zinc-300 dark:bg-zinc-700 mb-4" />
+            <p className="text-xs tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 font-medium">
+              © {new Date().getFullYear()} Shiv.
+            </p>
+            <p className="text-[10px] tracking-wide text-zinc-300 dark:text-zinc-600">
+              Engineered with precision.
+            </p>
+          </div>
+        </footer>
+}
+</file>
+
+<file path="src/components/GlassBack.tsx">
+import { motion } from "framer-motion";
+
+export const GlassmorphicBackdrop = ({ isFixed = false }: { isFixed?: boolean }) => {
+  return (
+    // 1. THE ROOT: Must be completely transparent so the Hero shows through.
+    <div 
+      className={`
+        ${isFixed ? "fixed" : "absolute"} 
+        inset-0 z-0 pointer-events-none overflow-hidden bg-transparent
+      `}
+    >
+      {/* 2. THE ARC GRADIENTS: Floating color orbs using high-perf radial gradients */}
+      <motion.div
+        animate={{ x: [0, 50, 0], y: [0, -50, 0], scale: [1, 1.1, 1] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full transform-gpu bg-[radial-gradient(circle_at_center,rgba(129,140,248,0.4)_0%,transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.3)_0%,transparent_70%)]"
+      />
+      
+      <motion.div
+        animate={{ x: [0, -40, 0], y: [0, 60, 0], scale: [1, 1.2, 1] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full transform-gpu bg-[radial-gradient(circle_at_center,rgba(251,113,133,0.3)_0%,transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(225,29,72,0.25)_0%,transparent_70%)]"
+      />
+      
+      <motion.div
+        animate={{ x: [0, 30, 0], y: [0, 20, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        className="absolute top-[20%] right-[20%] w-[40vw] h-[40vw] rounded-full transform-gpu bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.3)_0%,transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(8,145,178,0.25)_0%,transparent_70%)]"
+      />
+
+      {/* 3. THE FROSTED PANE: This blurs BOTH the orbs AND the Hero section underneath. */}
+      {/* Adding a subtle top border creates the physical "edge" of the glass card. */}
+      <div className="absolute inset-0 bg-white/40 dark:bg-[#0a0a0a]/40 backdrop-blur-xl transform-gpu border-t border-white/50 dark:border-white/10" />
+    </div>
+  );
+};
+</file>
+
+<file path="src/components/Services.tsx">
+"use client";
+
+import { ArrowUpRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+
+const customEase = [0.25, 1, 0.5, 1];
+
+const services = [
+  {
+    id: "founders",
+    label: "Founders",
+    title: "Product Development",
+    description: "Transforming raw concepts into market-ready platforms. I architect and build scalable MVPs using the modern TypeScript ecosystem designed to ship fast and survive scale.",
+    deliverables: ["End-to-End Software Development", "Robust API Designs", "Scalable Database & Auth Architecture"],
+    cta: "Contact Me",
+    tag: "01",
+  },
+  {
+    id: "sme",
+    label: "Agencies & SMEs",
+    title: "AI & Workflow Scaling",
+    description: "Eliminate manual bottlenecks and scale your operations. I integrate complex automation workflows and deploy AI agents that handle customer engagement around the clock.",
+    deliverables: ["Custom n8n, Make, Pipedream & Zapier", "AI Voice & Chatbot Agents", "CRM & GoHighLevel Integrations"],
+    cta: "Contact Me",
+    tag: "02",
+  },
+  {
+    id: "teams",
+    label: "Established Teams",
+    title: "Custom Integrations",
+    description: "Break down data silos. I connect your fragmented tools and build bespoke internal dashboards, allowing your team to operate from a single source of truth.",
+    deliverables: ["Custom OAuth 2.0 Gateways", "Internal Tooling (Retool / Payload CMS)", "Third-Party API SDK Development"],
+    cta: "Contact Me",
+    tag: "03",
+  },
+];
+
+export function Services() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const active = services[activeIndex];
+  const itemHeight = 60; 
+  const yOffset = -(activeIndex * itemHeight);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % services.length);
+    }, 4500); 
+    return () => clearInterval(timer);
+  }, [activeIndex]);
+
+  return (
+    // The background color is mandatory here so it obscures the sticky hero beneath it
+    <section 
+      id="services" 
+      className="relative z-10 min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-16 xl:px-24 py-32"
+    >
+      <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 lg:gap-24 items-start">
+        
+        {/* LEFT COLUMN: The Target Selector */}
+        <div className="lg:col-span-5 relative">
+          <div className="flex flex-col md:flex-row md:items-start gap-3 md:gap-6 mt-4 lg:mt-[5rem] relative">
+            <span className="text-xl md:text-4xl font-light text-zinc-400 dark:text-zinc-600 flex md:h-[60px] items-center shrink-0">
+              For
+            </span>
+            
+            <div className="relative h-auto md:h-[60px] w-full z-10 overflow-visible">
+              <motion.div 
+                className="relative md:absolute top-0 left-0 flex flex-col w-full gap-2 md:gap-0"
+                animate={{ y: isMobile ? 0 : yOffset }}
+                transition={{ duration: 0.6, ease: customEase }}
+              >
+                {services.map((s, index) => {
+                  const isActive = index === activeIndex;
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() => setActiveIndex(index)}
+                      className="text-left group flex items-center h-auto md:h-[60px] w-full py-1.5 md:py-0"
+                    >
+                      <motion.span
+                        animate={{
+                          opacity: isActive ? 1 : 0.25, 
+                          scale: isActive ? 1 : 0.85,
+                          x: isActive ? (isMobile ? 12 : 0) : (isMobile ? 0 : -10),
+                        }}
+                        transition={{ duration: 0.5, ease: customEase }}
+                        className={`block text-2xl md:text-4xl lg:text-5xl tracking-tight transition-colors duration-500 origin-left whitespace-nowrap font-medium ${
+                          isActive
+                            ? "text-zinc-900 dark:text-zinc-50"
+                            : "text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-300"
+                        }`}
+                      >
+                        {s.label}
+                      </motion.span>
+                    </button>
+                  );
+                })}
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: The Value Proposition Panel */}
+        <div className="lg:col-span-7 relative min-h-[400px]"> 
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active.id}
+              initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -15, filter: "blur(4px)" }}
+              transition={{ duration: isMobile ? 0.8 : 0.4, ease: customEase }}
+              className="flex flex-col relative z-20 lg:pl-12 xl:pl-24 pt-2 mt-4 md:mt-0" 
+            >
+              <div className="flex flex-col md:flex-row items-start gap-4 md:gap-8 mb-8">
+                <span className="text-[10px] font-mono tracking-[0.2em] text-zinc-400 dark:text-zinc-500 md:mt-2.5 hidden md:block">
+                  {active.tag}
+                </span>
+                
+                <div className="flex-1">
+                  <h3 className="text-2xl md:text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 mb-4 md:mb-6 leading-tight flex items-center gap-3">
+                    {active.title}
+                  </h3>
+                  <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-sm md:text-base font-light mb-8 max-w-xl">
+                    {active.description}
+                  </p>
+
+                  <ul className="flex flex-col gap-3 mb-10 md:mb-12">
+                    {active.deliverables.map((item, i) => (
+                      <motion.li 
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.15 * i + 0.2, duration: 0.5, ease: customEase }}
+                        className="flex items-center gap-3 text-[13px] md:text-sm text-zinc-700 dark:text-zinc-300 font-light tracking-wide"
+                      >
+                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-800 dark:bg-zinc-200 opacity-60 shrink-0" />
+                        {item}
+                      </motion.li>
+                    ))}
+                  </ul>
+
+                  <motion.a
+                    href="#contact"
+                    className="group inline-flex items-center justify-center gap-3 px-8 py-3.5 md:py-4 bg-zinc-900 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 text-[11px] md:text-xs font-semibold tracking-[0.15em] uppercase rounded-full hover:scale-105 active:scale-95 transition-all duration-300 w-full md:w-max"
+                  >
+                    {active.cta}
+                    <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </motion.a>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/SpaceTimeFabric.tsx">
+import { motion } from "framer-motion";
+
+
+export default function SpacetimeFabric  ({ isFixed = false }: { isFixed?: boolean }) {
+    return (
+      <div 
+        className={`
+          ${isFixed ? "fixed" : "absolute"} 
+          inset-0 z-0 pointer-events-none overflow-hidden bg-[#fafafa] dark:bg-[#0a0a0a] transition-colors duration-700
+        `}
+      >
+        {/* 1. Ambient Gravity Wells (Breathing Orbs) */}
+        <motion.div
+          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-15%] left-[-10%] w-[50vw] h-[50vw] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[120px] bg-zinc-300 dark:bg-zinc-800/30"
+        />
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[150px] bg-zinc-200 dark:bg-zinc-900/30"
+        />
+  
+        {/* 2. The Fabric Grid */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(128, 128, 128, 0.08) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(128, 128, 128, 0.08) 1px, transparent 1px)
+            `,
+            backgroundSize: "60px 60px",
+            WebkitMaskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, #000 20%, transparent 100%)",
+            maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, #000 20%, transparent 100%)",
+          }}
+        />
+      </div>
+    );
+  };
 </file>
 
 <file path="src/components/ThemeProvider.tsx">
@@ -1924,48 +1889,6 @@ const App = () => (
 export default App;
 </file>
 
-<file path="src/pages/Index.tsx">
-import { useState } from "react";
-import { Navigation } from "@/components/Navigation";
-import { HeroSection } from "@/components/HeroSection";
-import { Welcome } from "@/components/Welcome";
-import { MainContent } from "@/components/MainContent";
-import { GlassmorphicBackdrop } from "@/components/GlassBack";
-
-// The Spacetime Background Component
-// Change this component in your file
-
-
-const Index = () => {
-  const [welcomeComplete, setWelcomeComplete] = useState(false);
-
-  return (
-    <div className="relative min-h-screen selection:bg-zinc-900 selection:text-white dark:selection:bg-zinc-50 dark:selection:text-zinc-900">
-      
-      {/* The Dynamic Background Layer */}
-      <GlassmorphicBackdrop isFixed={true} />
-      {/* Main content layer */}
-      <div className="relative z-10">
-        <Navigation />
-        <main>
-          <HeroSection />
-          <MainContent/>
-        </main>
-      </div>
-
-      {/* Welcome screen overlay */}
-      {!welcomeComplete && (
-        <div className="fixed inset-0 z-50">
-          <Welcome onComplete={() => setWelcomeComplete(true)} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default Index;
-</file>
-
 <file path="src/components/ContactSection.tsx">
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
@@ -2063,6 +1986,57 @@ export function ContactSection() {
 }
 </file>
 
+<file path="src/pages/Index.tsx">
+import { useState } from "react";
+import { Navigation } from "@/components/Navigation";
+import { HeroSection } from "@/components/HeroSection";
+import { Welcome } from "@/components/Welcome";
+import { MainContent } from "@/components/MainContent";
+import { ProjectsSection } from "@/components/ProjectsSection";
+import { GlassmorphicBackdrop } from "@/components/GlassBack";
+import { ExperienceSection } from "@/components/ExperienceSection";
+import { ContactSection } from "@/components/ContactSection";
+import { Services } from "@/components/Services";
+import Footer from "@/components/Footer";
+
+// The Spacetime Background Component
+// Change this component in your file
+
+
+const Index = () => {
+  const [welcomeComplete, setWelcomeComplete] = useState(false);
+
+  return (
+    <div className="relative min-h-screen selection:bg-zinc-900 selection:text-white dark:selection:bg-zinc-50 dark:selection:text-zinc-900">
+      
+      {/* The Dynamic Background Layer */}
+      <GlassmorphicBackdrop />
+      {/* Main content layer */}
+      <div className="relative z-10">
+        <Navigation />
+        <main>
+          <HeroSection />
+          <Services />
+                <ProjectsSection />
+                <ExperienceSection />
+                <ContactSection />
+                <Footer />
+        </main>
+      </div>
+
+      {/* Welcome screen overlay */}
+      {!welcomeComplete && (
+        <div className="fixed inset-0 z-50">
+          <Welcome onComplete={() => setWelcomeComplete(true)} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Index;
+</file>
+
 <file path="src/components/Navigation.tsx">
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
@@ -2073,6 +2047,7 @@ const customEase = [0.25, 1, 0.5, 1];
 
 const navItems = [
   { label: "Home", href: "#home" },
+  { label: "What I Do", href: "#services" },
   { label: "Projects", href: "#projects" },
   { label: "Experience", href: "#experience" },
   { label: "Contact", href: "#contact" },
@@ -2139,14 +2114,16 @@ export function Navigation() {
 
       {/* ─── Desktop Nav ─── */}
       <motion.nav
-        initial={{ y: -80, opacity: 0, filter: "blur(10px)" }}
+        initial={{ y: -80, x: "-50%", opacity: 0, filter: "blur(10px)" }} // Added x: "-50%" to lock to center
         animate={{ 
           y: isVisible ? 0 : -80, 
+          x: "-50%", // Added x: "-50%"
           opacity: isVisible ? 1 : 0,
           filter: isVisible ? "blur(0px)" : "blur(10px)"
         }}
         transition={{ duration: 0.8, ease: customEase }}
-        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 hidden md:flex items-center gap-3"
+        // Removed -translate-x-1/2 from className as Framer Motion handles it now
+        className="fixed top-6 left-1/2 z-50 hidden md:flex items-center gap-3"
       >
         {/* The Navigation Pill (Perfectly Centered) */}
         <div
@@ -2503,8 +2480,8 @@ const socialLinks = [
 
 export function HeroSection() {
   return (
-    // 'sticky top-0' keeps it pinned. '-z-10' puts it behind the next section.
-    <section className="sticky top-0 h-screen w-full flex flex-col justify-center items-center px-6 md:px-12 -z-10 overflow-hidden">
+    // Replaced -z-10 with z-0. This ensures elements stay clickable!
+    <section id="home" className="relative h-screen w-full flex flex-col justify-center items-center px-6 md:px-12 z-0 overflow-hidden">
       
       {/* Centered Main Text */}
       <motion.div
@@ -2523,19 +2500,21 @@ export function HeroSection() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, ease: customEase, delay: 0.4 }}
-        className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between gap-6 pb-12"
+        // Changed to justify-center, increased pb to bring it slightly up, added a wider gap
+        className="w-full max-w-2xl flex flex-col md:flex-row items-center justify-center gap-10 pb-24 md:pb-32"
       >
         <a
           href="https://drive.google.com/file/d/1GHUuIceA_ufZ-ypgUDFTQ1IniPbyJEk2/view?usp=share_link"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 px-6 py-3 text-zinc-500 dark:text-zinc-400 text-sm font-medium hover:text-zinc-900 dark:hover:text-zinc-50 border border-zinc-200 dark:border-zinc-800 rounded-full transition-colors duration-300"
+          // Scaled up text, icon, and padding
+          className="flex items-center gap-3 px-8 py-4 text-zinc-500 dark:text-zinc-400 text-base font-medium hover:text-zinc-900 dark:hover:text-zinc-50 rounded-full transition-colors duration-300"
         >
-          <Download className="w-3.5 h-3.5" />
+          <Download className="w-5 h-5" />
           Resume
         </a>
         
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-8">
           {socialLinks.map((social) => (
             <a
               key={social.name}
@@ -2544,7 +2523,8 @@ export function HeroSection() {
               rel="noopener noreferrer"
               className="text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-50 transition-colors duration-300"
             >
-              <social.icon className="w-5 h-5 stroke-[1.5]" />
+              {/* Scaled up social icons */}
+              <social.icon className="w-6 h-6 stroke-[1.5]" />
             </a>
           ))}
         </div>
