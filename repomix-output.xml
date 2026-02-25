@@ -54,10 +54,14 @@ src/
       use-toast.ts
     ContactSection.tsx
     ExperienceSection.tsx
-    FlowingText.tsx
+    Footer.tsx
+    GlassBack.tsx
     HeroSection.tsx
+    MainContent.tsx
     Navigation.tsx
     ProjectsSection.tsx
+    Services.tsx
+    SpaceTimeFabric.tsx
     ThemeProvider.tsx
     ThemeToggle.tsx
     Welcome.tsx
@@ -89,6 +93,310 @@ vite.config.ts
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="src/components/Footer.tsx">
+export default function Footer (){
+
+    return         <footer className="py-12 px-6 border-t border-zinc-200/50 dark:border-zinc-800/50">
+          <div className="max-w-6xl mx-auto flex flex-col items-center justify-center gap-2">
+            <div className="w-6 h-px bg-zinc-300 dark:bg-zinc-700 mb-4" />
+            <p className="text-xs tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 font-medium">
+              © {new Date().getFullYear()} Shiv.
+            </p>
+            <p className="text-[10px] tracking-wide text-zinc-300 dark:text-zinc-600">
+              Engineered with precision.
+            </p>
+          </div>
+        </footer>
+}
+</file>
+
+<file path="src/components/GlassBack.tsx">
+import { motion } from "framer-motion";
+
+export const GlassmorphicBackdrop = ({ isFixed = false }: { isFixed?: boolean }) => {
+  return (
+    // 1. THE ROOT: Must be completely transparent so the Hero shows through.
+    <div 
+      className={`
+        ${isFixed ? "fixed" : "absolute"} 
+        inset-0 z-0 pointer-events-none overflow-hidden bg-transparent
+      `}
+    >
+      {/* 2. THE ARC GRADIENTS: Floating color orbs using high-perf radial gradients */}
+      <motion.div
+        animate={{ x: [0, 50, 0], y: [0, -50, 0], scale: [1, 1.1, 1] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full transform-gpu bg-[radial-gradient(circle_at_center,rgba(129,140,248,0.4)_0%,transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.3)_0%,transparent_70%)]"
+      />
+      
+      <motion.div
+        animate={{ x: [0, -40, 0], y: [0, 60, 0], scale: [1, 1.2, 1] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full transform-gpu bg-[radial-gradient(circle_at_center,rgba(251,113,133,0.3)_0%,transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(225,29,72,0.25)_0%,transparent_70%)]"
+      />
+      
+      <motion.div
+        animate={{ x: [0, 30, 0], y: [0, 20, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        className="absolute top-[20%] right-[20%] w-[40vw] h-[40vw] rounded-full transform-gpu bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.3)_0%,transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(8,145,178,0.25)_0%,transparent_70%)]"
+      />
+
+      {/* 3. THE FROSTED PANE: This blurs BOTH the orbs AND the Hero section underneath. */}
+      {/* Adding a subtle top border creates the physical "edge" of the glass card. */}
+      <div className="absolute inset-0 bg-white/40 dark:bg-[#0a0a0a]/40 backdrop-blur-xl transform-gpu border-t border-white/50 dark:border-white/10" />
+    </div>
+  );
+};
+</file>
+
+<file path="src/components/MainContent.tsx">
+import { ProjectsSection } from "@/components/ProjectsSection";
+import { ExperienceSection } from "@/components/ExperienceSection";
+import { ContactSection } from "@/components/ContactSection";
+import { Services } from "@/components/Services";
+import Footer from "@/components/Footer";
+import { GlassmorphicBackdrop } from "./GlassBack";
+
+export const MainContent = () => {
+    return (
+        // CRITICAL FIX: Added 'relative', 'z-20', and 'overflow-hidden'.
+        // This traps the absolute background inside this wrapper and sits it on top of the Hero.
+        // Added 'rounded-t-[3rem]' so it looks like a sleek card sliding over your Hero.
+        <div className="relative z-20 overflow-hidden rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+            
+            {/* The backdrop is now perfectly contained inside this block */}
+            <GlassmorphicBackdrop />
+            
+            {/* Because the background is absolute, your content needs to be relative z-10 
+              so it sits on top of the glass, not underneath it.
+            */}
+            <div className="relative z-10">
+                <Services />
+                <ProjectsSection />
+                <ExperienceSection />
+                <ContactSection />
+                <Footer />
+            </div>
+            
+        </div>
+    );
+};
+</file>
+
+<file path="src/components/Services.tsx">
+"use client";
+
+import { ArrowUpRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+
+const customEase = [0.25, 1, 0.5, 1];
+
+const services = [
+  {
+    id: "founders",
+    label: "Founders",
+    title: "Product Development",
+    description: "Transforming raw concepts into market-ready platforms. I architect and build scalable MVPs using the modern TypeScript ecosystem designed to ship fast and survive scale.",
+    deliverables: ["End-to-End Software Development", "Robust API Designs", "Scalable Database & Auth Architecture"],
+    cta: "Contact Me",
+    tag: "01",
+  },
+  {
+    id: "sme",
+    label: "Agencies & SMEs",
+    title: "AI & Workflow Scaling",
+    description: "Eliminate manual bottlenecks and scale your operations. I integrate complex automation workflows and deploy AI agents that handle customer engagement around the clock.",
+    deliverables: ["Custom n8n, Make, Pipedream & Zapier", "AI Voice & Chatbot Agents", "CRM & GoHighLevel Integrations"],
+    cta: "Contact Me",
+    tag: "02",
+  },
+  {
+    id: "teams",
+    label: "Established Teams",
+    title: "Custom Integrations",
+    description: "Break down data silos. I connect your fragmented tools and build bespoke internal dashboards, allowing your team to operate from a single source of truth.",
+    deliverables: ["Custom OAuth 2.0 Gateways", "Internal Tooling (Retool / Payload CMS)", "Third-Party API SDK Development"],
+    cta: "Contact Me",
+    tag: "03",
+  },
+];
+
+export function Services() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const active = services[activeIndex];
+  const itemHeight = 60; 
+  const yOffset = -(activeIndex * itemHeight);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % services.length);
+    }, 4500); 
+    return () => clearInterval(timer);
+  }, [activeIndex]);
+
+  return (
+    // The background color is mandatory here so it obscures the sticky hero beneath it
+    <section 
+      id="services" 
+      className="relative z-10 min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-16 xl:px-24 py-32"
+    >
+      <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 lg:gap-24 items-start">
+        
+        {/* LEFT COLUMN: The Target Selector */}
+        <div className="lg:col-span-5 relative">
+          <div className="flex flex-col md:flex-row md:items-start gap-3 md:gap-6 mt-4 lg:mt-[5rem] relative">
+            <span className="text-xl md:text-4xl font-light text-zinc-400 dark:text-zinc-600 flex md:h-[60px] items-center shrink-0">
+              For
+            </span>
+            
+            <div className="relative h-auto md:h-[60px] w-full z-10 overflow-visible">
+              <motion.div 
+                className="relative md:absolute top-0 left-0 flex flex-col w-full gap-2 md:gap-0"
+                animate={{ y: isMobile ? 0 : yOffset }}
+                transition={{ duration: 0.6, ease: customEase }}
+              >
+                {services.map((s, index) => {
+                  const isActive = index === activeIndex;
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() => setActiveIndex(index)}
+                      className="text-left group flex items-center h-auto md:h-[60px] w-full py-1.5 md:py-0"
+                    >
+                      <motion.span
+                        animate={{
+                          opacity: isActive ? 1 : 0.25, 
+                          scale: isActive ? 1 : 0.85,
+                          x: isActive ? (isMobile ? 12 : 0) : (isMobile ? 0 : -10),
+                        }}
+                        transition={{ duration: 0.5, ease: customEase }}
+                        className={`block text-2xl md:text-4xl lg:text-5xl tracking-tight transition-colors duration-500 origin-left whitespace-nowrap font-medium ${
+                          isActive
+                            ? "text-zinc-900 dark:text-zinc-50"
+                            : "text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-300"
+                        }`}
+                      >
+                        {s.label}
+                      </motion.span>
+                    </button>
+                  );
+                })}
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: The Value Proposition Panel */}
+        <div className="lg:col-span-7 relative min-h-[400px]"> 
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active.id}
+              initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -15, filter: "blur(4px)" }}
+              transition={{ duration: isMobile ? 0.8 : 0.4, ease: customEase }}
+              className="flex flex-col relative z-20 lg:pl-12 xl:pl-24 pt-2 mt-4 md:mt-0" 
+            >
+              <div className="flex flex-col md:flex-row items-start gap-4 md:gap-8 mb-8">
+                <span className="text-[10px] font-mono tracking-[0.2em] text-zinc-400 dark:text-zinc-500 md:mt-2.5 hidden md:block">
+                  {active.tag}
+                </span>
+                
+                <div className="flex-1">
+                  <h3 className="text-2xl md:text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 mb-4 md:mb-6 leading-tight flex items-center gap-3">
+                    {active.title}
+                  </h3>
+                  <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-sm md:text-base font-light mb-8 max-w-xl">
+                    {active.description}
+                  </p>
+
+                  <ul className="flex flex-col gap-3 mb-10 md:mb-12">
+                    {active.deliverables.map((item, i) => (
+                      <motion.li 
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.15 * i + 0.2, duration: 0.5, ease: customEase }}
+                        className="flex items-center gap-3 text-[13px] md:text-sm text-zinc-700 dark:text-zinc-300 font-light tracking-wide"
+                      >
+                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-800 dark:bg-zinc-200 opacity-60 shrink-0" />
+                        {item}
+                      </motion.li>
+                    ))}
+                  </ul>
+
+                  <motion.a
+                    href="#contact"
+                    className="group inline-flex items-center justify-center gap-3 px-8 py-3.5 md:py-4 bg-zinc-900 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 text-[11px] md:text-xs font-semibold tracking-[0.15em] uppercase rounded-full hover:scale-105 active:scale-95 transition-all duration-300 w-full md:w-max"
+                  >
+                    {active.cta}
+                    <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </motion.a>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/SpaceTimeFabric.tsx">
+import { motion } from "framer-motion";
+
+
+export default function SpacetimeFabric  ({ isFixed = false }: { isFixed?: boolean }) {
+    return (
+      <div 
+        className={`
+          ${isFixed ? "fixed" : "absolute"} 
+          inset-0 z-0 pointer-events-none overflow-hidden bg-[#fafafa] dark:bg-[#0a0a0a] transition-colors duration-700
+        `}
+      >
+        {/* 1. Ambient Gravity Wells (Breathing Orbs) */}
+        <motion.div
+          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-15%] left-[-10%] w-[50vw] h-[50vw] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[120px] bg-zinc-300 dark:bg-zinc-800/30"
+        />
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[150px] bg-zinc-200 dark:bg-zinc-900/30"
+        />
+  
+        {/* 2. The Fabric Grid */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(128, 128, 128, 0.08) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(128, 128, 128, 0.08) 1px, transparent 1px)
+            `,
+            backgroundSize: "60px 60px",
+            WebkitMaskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, #000 20%, transparent 100%)",
+            maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, #000 20%, transparent 100%)",
+          }}
+        />
+      </div>
+    );
+  };
+</file>
 
 <file path="src/components/ui/button.tsx">
 import * as React from "react"
@@ -384,352 +692,6 @@ import { useToast, toast } from "@/hooks/use-toast";
 export { useToast, toast };
 </file>
 
-<file path="src/components/FlowingText.tsx">
-import { memo } from "react";
-import "../App.css";
-
-export const FlowingText = memo(function FLowingText() {
-  const codeSnippets = [
-    <>
-      <span className="text-purple-400">const</span>{" "}
-      <span className="text-blue-400">add</span> ={" "}
-      <span className="text-yellow-300">(a: number, b: number)</span> =&gt;{" "}
-      {"{"}
-      <br />
-      &nbsp;&nbsp;<span className="text-purple-400">return</span> a + b;
-      <br />
-      {"}"}
-    </>,
-
-    <>
-      <span className="text-purple-400">enum</span>{" "}
-      <span className="text-green-400">Status</span> {"{"}
-      <br />
-      &nbsp;&nbsp;Pending = <span className="text-pink-400">'PENDING'</span>,
-      <br />
-      &nbsp;&nbsp;Completed = <span className="text-pink-400">'COMPLETED'</span>
-      ,
-      <br />
-      {"}"}
-    </>,
-
-    <>
-      <span className="text-purple-400">import</span>{" "}
-      <span className="text-green-400">{"{ createSlice }"}</span>{" "}
-      <span className="text-purple-400">from</span>{" "}
-      <span className="text-green-400">'@reduxjs/toolkit'</span>;
-      <br />
-      <br />
-      <span className="text-purple-400">const</span> counterSlice = createSlice(
-      {"{ "}
-      <br />
-      &nbsp;&nbsp;<span className="text-blue-400">name</span>:{" "}
-      <span className="text-pink-400">'counter'</span>,
-      <br />
-      &nbsp;&nbsp;<span className="text-blue-400">initialState</span>: 0,
-      <br />
-      &nbsp;&nbsp;<span className="text-blue-400">reducers</span>: {"{"}
-      <br />
-      &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-blue-400">increment</span>:
-      (state) =&gt; state + 1
-      <br />
-      &nbsp;&nbsp;{"}"}
-      <br />
-      {"});"}
-    </>,
-
-    <>
-      <span className="text-purple-400">import</span>{" "}
-      <span className="text-green-400">{"{ Routes, Route }"}</span>{" "}
-      <span className="text-purple-400">from</span>{" "}
-      <span className="text-green-400">'react-router-dom'</span>;
-      <br />
-      <br />
-      <span className="text-blue-400">{"<Routes>"}</span>
-      <br />
-      &nbsp;&nbsp;
-      <span className="text-blue-400">
-        {"<Route path='/' element={<Home />} />"}
-      </span>
-      <br />
-      <span className="text-blue-400">{"</Routes>"}</span>
-    </>,
-
-    <>
-      <span className="text-purple-400">import</span>{" "}
-      <span className="text-green-400">{"{ z }"}</span>{" "}
-      <span className="text-purple-400">from</span>{" "}
-      <span className="text-green-400">'zod'</span>;
-      <br />
-      <span className="text-purple-400">const</span> schema = z.object({"{"}
-      <br />
-      &nbsp;&nbsp;name: z.string(),
-      <br />
-      &nbsp;&nbsp;age: z.number().min(18),
-      <br />
-      {"});"}
-    </>,
-
-    <>
-      <span className="text-purple-400">interface</span>{" "}
-      <span className="text-green-400">User</span> {"{"}
-      <br />
-      &nbsp;&nbsp;<span className="text-blue-400">name</span>:{" "}
-      <span className="text-pink-400">string</span>;
-      <br />
-      &nbsp;&nbsp;<span className="text-blue-400">age</span>:{" "}
-      <span className="text-pink-400">number</span>;
-      <br />
-      {"}"}
-    </>,
-
-    <>
-      <span className="text-purple-400">async</span>{" "}
-      <span className="text-purple-400">function</span>{" "}
-      <span className="text-blue-400">fetchUser</span>() {"{"}
-      <br />
-      &nbsp;&nbsp;<span className="text-purple-400">const</span> res ={" "}
-      <span className="text-blue-400">await</span> fetch(
-      <span className="text-green-400">'/api/user'</span>);
-      <br />
-      &nbsp;&nbsp;<span className="text-purple-400">return</span>{" "}
-      <span className="text-blue-400">await</span> res.json();
-      <br />
-      {"}"}
-    </>,
-
-    <>
-      <span className="text-purple-400">import</span> type {"{"}
-      <span className="text-green-400">NextApiRequest</span>,{" "}
-      <span className="text-green-400">NextApiResponse</span>
-      {"}"} from <span className="text-green-400">'next'</span>; <br />
-      <br />
-      <span className="text-purple-400">export default</span> (
-      <span className="text-blue-400">req</span>: NextApiRequest,{" "}
-      <span className="text-blue-400">res</span>: NextApiResponse ) =&gt; {"{"}
-      <br />
-      &nbsp;&nbsp;res.status(200).json({" "}
-      <span className="text-blue-400">message</span>:{" "}
-      <span className="text-green-400">'Hello API'</span> );
-      <br />
-      {"}"}
-    </>,
-
-    <>
-      <span className="text-purple-400">import</span>{" "}
-      <span className="text-green-400">express</span>{" "}
-      <span className="text-purple-400">from</span>{" "}
-      <span className="text-green-400">'express'</span>;
-      <br />
-      <span className="text-purple-400">const</span>{" "}
-      <span className="text-blue-400">app</span> = express();
-      <br />
-      <span className="text-blue-400">app.listen</span>(3000, () =&gt; {"{"}
-      <br />
-      &nbsp;&nbsp;<span className="text-blue-400">console.log</span>(
-      <span className="text-green-400">'Server started'</span>);
-      <br />
-      {"});"}
-    </>,
-
-    <>
-      <span className="text-purple-400">import</span>{" "}
-      <span className="text-blue-400">{"{ useEffect, useState }"}</span>{" "}
-      <span className="text-purple-400">from</span>{" "}
-      <span className="text-green-400">'react'</span>;
-      <br />
-      <br />
-      <span className="text-purple-400">const</span> Example = () =&gt; {"{"}
-      <br />
-      &nbsp;&nbsp;<span className="text-purple-400">const</span> [
-      <span className="text-blue-400">data</span>,{" "}
-      <span className="text-blue-400">setData</span>] ={" "}
-      <span className="text-blue-400">useState</span>([]);
-      <br />
-      &nbsp;&nbsp;<span className="text-blue-400">useEffect</span>(() =&gt;{" "}
-      {"{"}
-      <br />
-      &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-purple-400">fetch</span>(
-      <span className="text-green-400">'/api/data'</span>)
-      <br />
-      &nbsp;&nbsp;&nbsp;&nbsp;.then(res =&gt; res.json())
-      <br />
-      &nbsp;&nbsp;&nbsp;&nbsp;.then(setData);
-      <br />
-      &nbsp;&nbsp;{"}"}, []);
-      <br />
-      &nbsp;&nbsp;<span className="text-purple-400">return</span> {"<div>"}
-      {"{data.length}"} items{"</div>"};
-      <br />
-      {"}"}
-    </>,
-    <>
-      <span className="text-purple-400">type</span>{" "}
-      <span className="text-green-400">UserRole</span> ={" "}
-      <span className="text-pink-400">'admin'</span> |{" "}
-      <span className="text-pink-400">'user'</span> |{" "}
-      <span className="text-pink-400">'guest'</span>;
-    </>,
-
-    <>
-      <span className="text-purple-400">const</span>{" "}
-      <span className="text-blue-400">delay</span> ={" "}
-      <span className="text-yellow-300">(ms: number)</span> =&gt;{" "}
-      <span className="text-blue-400">new Promise</span>(res =&gt;{" "}
-      <span className="text-blue-400">setTimeout</span>(res, ms));
-    </>,
-
-    <>
-      <span className="text-purple-400">function</span>{" "}
-      <span className="text-blue-400">isDefined</span>&lt;T&gt;(value: T |{" "}
-      <span className="text-purple-400">undefined</span>): value is T {"{"}
-      <br />
-      &nbsp;&nbsp;<span className="text-purple-400">return</span> value !=={" "}
-      <span className="text-purple-400">undefined</span>;
-      <br />
-      {"}"}
-    </>,
-
-    <>
-      <span className="text-purple-400">import</span>{" "}
-      <span className="text-green-400">jwt</span>{" "}
-      <span className="text-purple-400">from</span>{" "}
-      <span className="text-green-400">'jsonwebtoken'</span>;
-      <br />
-      <span className="text-purple-400">const</span> token = jwt.sign(
-      <br />
-      &nbsp;&nbsp;{"{ userId: 123 }"},
-      <br />
-      &nbsp;&nbsp;<span className="text-green-400">'secret'</span>,
-      <br />
-      &nbsp;&nbsp;{"{ expiresIn: '1h' }"}
-      <br />
-      );
-    </>,
-
-    <>
-      <span className="text-purple-400">const</span>{" "}
-      <span className="text-blue-400">ENV</span> ={" "}
-      <span className="text-blue-400">process.env</span>.NODE_ENV;
-      <br />
-      <span className="text-blue-400">if</span> (ENV ==={" "}
-      <span className="text-pink-400">'development'</span>) {"{"}
-      <br />
-      &nbsp;&nbsp;<span className="text-blue-400">console.log</span>(
-      <span className="text-green-400">'Dev mode'</span>);
-      <br />
-      {"}"}
-    </>,
-
-    <>
-      <span className="text-purple-400">import</span>{" "}
-      <span className="text-green-400">{"{ PrismaClient }"}</span> {"from "}
-      <span className="text-green-400">'@prisma/client'</span>;
-      <br />
-      <span className="text-purple-400">const</span> prisma ={" "}
-      <span className="text-blue-400">new</span> PrismaClient();
-      <br />
-      <span className="text-purple-400">await</span> prisma.user.findMany();
-    </>,
-
-    <>
-      <span className="text-purple-400">export</span>{" "}
-      <span className="text-purple-400">const</span>{" "}
-      <span className="text-blue-400">config</span> = {"{"}
-      <br />
-      &nbsp;&nbsp;<span className="text-blue-400">api</span>: {"{"}
-      <br />
-      &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-blue-400">
-        bodyParser
-      </span>: <span className="text-purple-400">false</span>,
-      <br />
-      &nbsp;&nbsp;{"}"},
-      <br />
-      {"};"}
-    </>,
-
-    <>
-      <span className="text-purple-400">import</span>{" "}
-      <span className="text-blue-400">{"{ createContext, useContext }"}</span>{" "}
-      <span className="text-purple-400">from</span>{" "}
-      <span className="text-green-400">'react'</span>;
-      <br />
-      <span className="text-purple-400">const</span> ThemeContext =
-      createContext(<span className="text-purple-400">null</span>);
-      <br />
-      <span className="text-purple-400">const</span> useTheme = () =&gt;
-      useContext(ThemeContext);
-    </>,
-
-    <>
-      <span className="text-purple-400">declare</span>{" "}
-      <span className="text-purple-400">global</span> {"{"}
-      <br />
-      &nbsp;&nbsp;<span className="text-purple-400">namespace</span>{" "}
-      <span className="text-green-400">NodeJS</span> {"{"}
-      <br />
-      &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-purple-400">
-        interface
-      </span>{" "}
-      <span className="text-green-400">ProcessEnv</span> {"{"}
-      <br />
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <span className="text-blue-400">NEXT_PUBLIC_API_URL</span>:{" "}
-      <span className="text-pink-400">string</span>;
-      <br />
-      &nbsp;&nbsp;&nbsp;&nbsp;{"}"}
-      <br />
-      &nbsp;&nbsp;{"}"}
-      <br />
-      {"}"}
-    </>,
-  ];
-
-  const shuffleArray = (array: any[]) => {
-    return [...array].sort(() => Math.random() - 0.5);
-  };
-
-  const rows = Array.from({ length: 15 }, (_, i) => ({
-    id: i,
-    direction: i % 2 === 0 ? "rightToLeft" : "leftToRight",
-    speed: 10,
-    snippets: shuffleArray(codeSnippets),
-  }));
-
-  return (
-    <>
-      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-80">
-        <div className="w-full h-full flex flex-col justify-center">
-          <div className="w-full h-full">
-            {rows.map((row) => (
-              <div
-                key={row.id}
-                className={`text-base md:text-xl font-mono whitespace-nowrap flex items-center space-x-4 ${
-                  row.direction === "rightToLeft"
-                    ? "marquee-rtl"
-                    : "marquee-ltr"
-                }`}
-              >
-                {Array.from({ length: 10 }).map((_, idx) => (
-                  <span key={`first-${idx}`} className="mx-8">
-                    {row.snippets[idx % row.snippets.length]}
-                  </span>
-                ))}
-                {Array.from({ length: 10 }).map((_, idx) => (
-                  <span key={`second-${idx}`} className="mx-8">
-                    {row.snippets[idx % row.snippets.length]}
-                  </span>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </>
-  );
-});
-</file>
-
 <file path="src/components/ThemeProvider.tsx">
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -825,94 +787,6 @@ export function ThemeToggle() {
       <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
       <span className="sr-only">Toggle theme</span>
     </Button>
-  );
-}
-</file>
-
-<file path="src/components/Welcome.tsx">
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-
-
-
-
-const greetings = [
-  "Hello!",
-  "Hola!",
-  "Bonjour!",
-  "Ciao!",
-  "こんにちは!",
-  "안녕하세요!",
-  "مرحبا!",
-  "नमस्ते!",
-  "Namaste!",
-  "Привет!",
-  "Hej!",
-];
-
-export function Welcome({ onComplete }: { onComplete: () => void }) {
-  const [index, setIndex] = useState(0);
-  const [finished, setFinished] = useState(false);
-
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-
-    const startInterval = (delay: number) => {
-      interval = setInterval(() => {
-        setIndex((prev) => {
-          const nextIndex = prev + 1;
-          if (nextIndex >= greetings.length) {
-            clearInterval(interval);
-            setFinished(true);
-            setTimeout(onComplete, 500); // allow animation to complete
-            return prev;
-          }
-          return nextIndex;
-        });
-      }, delay);
-    };
-
-    const initialTimeout = setTimeout(() => {
-      setIndex((prev) => prev + 1);
-      startInterval(100);
-    }, 1500);
-
-    return () => {
-      clearTimeout(initialTimeout);
-      clearInterval(interval);
-    };
-  }, [onComplete]);
-
-  return (
-    <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      initial={{
-        opacity: 1,
-        backdropFilter: "blur(20px)",
-        backgroundColor: "rgba(0, 0, 0, 0.2)",
-      }}
-      animate={
-        finished
-          ? {
-              opacity: 0,
-              backdropFilter: "blur(0px)",
-              backgroundColor: "rgba(0, 0, 0, 0)",
-            }
-          : {
-              opacity: 1,
-              backdropFilter: "blur(20px)",
-              backgroundColor: "rgba(0, 0, 0, 0.2)",
-            }
-      }
-      transition={{ duration: 0.5, ease: "easeInOut" }}
-      style={{
-        WebkitBackdropFilter: "blur(20px)", // For Safari
-      }}
-    >
-      <h1 className="text-white text-5xl md:text-7xl borel">
-        {greetings[index]}
-      </h1>
-    </motion.div>
   );
 }
 </file>
@@ -1118,55 +992,6 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
-</file>
-
-<file path="src/pages/Index.tsx">
-import { useState } from "react";
-import { Navigation } from "@/components/Navigation";
-import { HeroSection } from "@/components/HeroSection";
-import { ProjectsSection } from "@/components/ProjectsSection";
-import { ExperienceSection } from "@/components/ExperienceSection";
-import { ContactSection } from "@/components/ContactSection";
-import { Welcome } from "@/components/Welcome";
-import { FlowingText } from "@/components/FlowingText";
-
-const Index = () => {
-  const [welcomeComplete, setWelcomeComplete] = useState(false);
-
-  return (
-    <div className="relative min-h-screen overflow-x-hidden">
-      {/* Background animation */}
-      <FlowingText />
-
-      {/* Main content - always visible under Welcome */}
-      <div className="relative z-0 backdrop-blur-sm">
-        <Navigation />
-        <main className="relative">
-          <HeroSection />
-          <ProjectsSection />
-          <ExperienceSection />
-          <ContactSection />
-        </main>
-        <footer className="py-8 px-6 bg-surface-secondary/50 border-t border-border">
-          <div className="max-w-6xl mx-auto text-center">
-            <p className="text-text-secondary">
-              © 2025 Shiv Rajput. All rights reserved.
-            </p>
-          </div>
-        </footer>
-      </div>
-
-      {/* Welcome screen overlay */}
-      {!welcomeComplete && (
-        <div className="fixed inset-0 z-50">
-          <Welcome onComplete={() => setWelcomeComplete(true)} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default Index;
 </file>
 
 <file path="src/pages/NotFound.tsx">
@@ -1406,6 +1231,89 @@ export default defineConfig(({ mode }) => ({
     },
   },
 }));
+</file>
+
+<file path="src/components/Welcome.tsx">
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+export function Welcome({ onComplete }: { onComplete: () => void }) {
+  const [stage, setStage] = useState<"greeting" | "lifting" | "done">("greeting");
+
+  useEffect(() => {
+    // Sequence the unboxing experience
+    const textRevealTimer = setTimeout(() => {
+      setStage("lifting");
+    }, 3200); // Time spent admiring the "box"
+
+    const completionTimer = setTimeout(() => {
+      setStage("done");
+      onComplete();
+    }, 4500); // Total time including the lift animation
+
+    return () => {
+      clearTimeout(textRevealTimer);
+      clearTimeout(completionTimer);
+    };
+  }, [onComplete]);
+
+  // Apple's signature smooth deceleration curve
+  const customEase = [0.25, 1, 0.5, 1]; 
+
+  if (stage === "done") return null;
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0a0a] overflow-hidden"
+      initial={{ y: 0 }}
+      animate={{ y: stage === "lifting" ? "-100%" : 0 }}
+      transition={{ 
+        duration: 1.2, 
+        ease: customEase // Creates that "friction lid" feeling
+      }}
+    >
+      {/* Subtle ambient spotlight/shimmer */}
+      <motion.div
+        className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08)_0%,transparent_60%)]"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: stage === "greeting" ? 1 : 0, scale: 1.2 }}
+        transition={{ duration: 3, ease: "easeOut" }}
+      />
+
+      <AnimatePresence>
+        {stage === "greeting" && (
+          <motion.div
+            className="relative flex flex-col items-center justify-center"
+            initial={{ opacity: 0, filter: "blur(20px)", scale: 0.9 }}
+            animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
+            exit={{ opacity: 0, filter: "blur(10px)", scale: 1.05 }}
+            transition={{
+              duration: 1.5,
+              ease: customEase,
+            }}
+          >
+            {/* The core profound statement. Keep it simple. */}
+            <h1 
+              className="text-white text-5xl md:text-7xl tracking-tighter" 
+              style={{ fontWeight: 300 }} // SF Pro Display / Inter feels best here
+            >
+              Hello.
+            </h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 0.4, y: 0 }}
+              transition={{ delay: 1.2, duration: 2, ease: "easeOut" }}
+              className="mt-4 text-xs tracking-[0.3em] text-white uppercase"
+            >
+              Welcome to my little corner on the web
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
 </file>
 
 <file path="src/App.css">
@@ -1989,113 +1897,6 @@ export default {
 } satisfies Config;
 </file>
 
-<file path="src/components/Navigation.tsx">
-import { ThemeToggle } from "./ThemeToggle";
-import { useState, useEffect } from "react";
-
-const navItems = [
-  { label: "Home", href: "#home" },
-  { label: "Projects", href: "#projects" },
-  { label: "Experience", href: "#experience" },
-  { label: "Contact", href: "#contact" },
-];
-
-export function Navigation() {
-  const [isMobile, setIsMobile] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-      setIsOpen(false);
-    }
-  };
-
-  return (
-    <nav className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
-      {/* Main container with group class restored */}
-      <div className="relative group">
-        {/* Clickable area - separate from theme toggle */}
-        <div 
-  className={`absolute inset-0 z-10 ${isMobile ? 'block' : 'hidden group-hover:hidden'}`}
-  style={{ pointerEvents: isOpen ? 'none' : 'auto' }}
-  onClick={() => setIsOpen(!isOpen)}
-/>
-
-        
-        {/* Central circle */}
-        <div 
-          className={`w-16 h-16 rounded-full bg-surface/90 backdrop-blur-md border border-border/30 shadow-lg flex items-center justify-center transition-all duration-300 ${
-            isMobile ? (isOpen ? "w-72 h-72" : "") : "group-hover:w-72 group-hover:h-72"
-          }`}
-        >
-          {/* Menu label */}
-          <span 
-            className={`text-text-primary font-medium absolute transition-opacity text-sm tracking-wider font-sans ${
-              isMobile 
-                ? (isOpen ? "opacity-0" : "opacity-100")
-                : "opacity-100 group-hover:opacity-0"
-            }`}
-          >
-            MENU
-          </span>
-          
-          {/* Navigation items */}
-          {navItems.map((item, index) => {
-            const angle = (index * 90) - 45;
-            const radius = 80;
-            
-            return (
-              <button
-                key={item.label}
-                onClick={() => scrollToSection(item.href)}
-                className={`absolute transition-opacity duration-200 hover:scale-110 ${
-                  isMobile
-                    ? (isOpen ? "opacity-100" : "opacity-0")
-                    : "opacity-0 group-hover:opacity-100"
-                }`}
-                style={{
-                  transform: `rotate(${angle}deg) translate(${radius}px) rotate(-${angle}deg)`,
-                }}
-              >
-                <div className="w-12 h-12 rounded-full bg-surface border border-border/30 flex items-center justify-center shadow-sm hover:bg-surface-secondary transition-colors">
-                  <span className="text-xs font-medium text-text-primary tracking-tight font-sans">
-                    {item.label}
-                  </span>
-                </div>
-              </button>
-            );
-          })}
-          
-          {/* Theme toggle - now properly isolated */}
-          <div 
-            className={`absolute bottom-2 right-2 transition-opacity ${
-              isMobile
-                ? (isOpen ? "opacity-100" : "opacity-0")
-                : "opacity-0 group-hover:opacity-100"
-            }`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <ThemeToggle />
-          </div>
-        </div>
-      </div>
-    </nav>
-  );
-}
-</file>
-
 <file path="src/App.tsx">
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -2123,90 +1924,138 @@ const App = () => (
 export default App;
 </file>
 
+<file path="src/pages/Index.tsx">
+import { useState } from "react";
+import { Navigation } from "@/components/Navigation";
+import { HeroSection } from "@/components/HeroSection";
+import { Welcome } from "@/components/Welcome";
+import { MainContent } from "@/components/MainContent";
+import { GlassmorphicBackdrop } from "@/components/GlassBack";
+
+// The Spacetime Background Component
+// Change this component in your file
+
+
+const Index = () => {
+  const [welcomeComplete, setWelcomeComplete] = useState(false);
+
+  return (
+    <div className="relative min-h-screen selection:bg-zinc-900 selection:text-white dark:selection:bg-zinc-50 dark:selection:text-zinc-900">
+      
+      {/* The Dynamic Background Layer */}
+      <GlassmorphicBackdrop isFixed={true} />
+      {/* Main content layer */}
+      <div className="relative z-10">
+        <Navigation />
+        <main>
+          <HeroSection />
+          <MainContent/>
+        </main>
+      </div>
+
+      {/* Welcome screen overlay */}
+      {!welcomeComplete && (
+        <div className="fixed inset-0 z-50">
+          <Welcome onComplete={() => setWelcomeComplete(true)} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Index;
+</file>
+
 <file path="src/components/ContactSection.tsx">
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
+import { Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
+
+const transitionEase = [0.16, 1, 0.3, 1];
 
 const contactInfo = [
   {
     icon: Mail,
     label: "Email",
     value: "srxhshiv@gmail.com",
-    href: "mailto:srxshiv@gmail.com"
+    href: "mailto:srxhshiv@gmail.com",
   },
   {
     icon: Phone,
     label: "Phone",
     value: "+91 7668585139",
-    href: "tel:+917668585139"
+    href: "tel:+917668585139",
   },
   {
     icon: MapPin,
     label: "Location",
     value: "Dehradun, IN",
-    href: "#"
-  }
+    href: "https://maps.google.com/?q=Dehradun",
+  },
 ];
 
 export function ContactSection() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  // Hardware-accelerated scroll tracking relative to this section
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  // Maps the scroll progress (0 to 1) to a gentle vertical shift
-  const yParallax = useTransform(scrollYProgress, [0, 1], [150, -150]);
-
   return (
-    <section id="contact" ref={ref} className="relative min-h-[70vh] py-32 px-6 overflow-hidden">
-      <div className="max-w-6xl mx-auto">
-        <motion.h2
-          className="pointer-events-none whitespace-nowrap absolute left-1/2 top-[10rem] md:top-[12rem] text-[12vw] font-heading3 text-black/15 dark:text-white/15 z-0 select-none tracking-tight leading-none"
-          style={{
-            x: "-50%", // Keep it horizontally centered
-            y: yParallax // Smooth vertical parallax
-          }}
+    <section id="contact" className="relative py-32 px-6 md:px-24 max-w-7xl mx-auto min-h-[70vh] flex flex-col justify-center">
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-8">
+        {/* Left Column: Massive Statement */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: transitionEase }}
+          className="flex flex-col justify-center"
         >
-          GET IN TOUCH
-        </motion.h2>
+          <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-zinc-900 dark:text-zinc-50 mb-6">
+            Let's build <br className="hidden md:block" />
+            <span className="text-zinc-400 dark:text-zinc-600">something.</span>
+          </h2>
+          <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 max-w-md leading-relaxed">
+            Feel free to reach out if you're looking for a developer, have a question, or simply want to connect.
+          </p>
+        </motion.div>
 
-        <div className="mt-12">
-          {/* Contact Info */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative z-10"
-          >
-            <h3 className="text-2xl font-sf-pro font-semibold text-text-primary mb-8">
-              Let's Connect
-            </h3>
-            
-            <div className="space-y-6 mb-12">
-              {contactInfo.map((item, index) => (
-                <motion.a
-                  key={index}
-                  href={item.href}
-                  whileHover={{ x: 10 }}
-                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-surface-secondary transition-all duration-300 group max-w-sm bg-background/50 backdrop-blur-sm"
-                >
-                  <div className="w-12 h-12 bg-accent-blue/10 rounded-full flex items-center justify-center group-hover:bg-accent-blue group-hover:text-white transition-all duration-300">
-                    <item.icon size={20} className="text-accent-blue group-hover:text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-text-secondary">{item.label}</p>
-                    <p className="text-text-primary font-medium">{item.value}</p>
-                  </div>
-                </motion.a>
-              ))}
-            </div>
+        {/* Right Column: Sleek Interactive Rows */}
+        <div className="flex flex-col justify-center w-full">
+          {contactInfo.map((item, index) => (
+            <motion.a
+              key={item.label}
+              href={item.href}
+              target={item.label === "Location" ? "_blank" : "_self"}
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8, ease: transitionEase, delay: index * 0.15 }}
+              className="group flex items-center justify-between py-6 md:py-8 border-b border-zinc-200 dark:border-zinc-800 transition-colors hover:border-zinc-900 dark:hover:border-zinc-50"
+            >
+              <div className="flex items-center gap-6 md:gap-8">
+                {/* Icon wrapper - completely flat */}
+                <div className="text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-900 dark:group-hover:text-zinc-50 transition-colors duration-300">
+                  <item.icon size={24} strokeWidth={1.5} />
+                </div>
+                
+                {/* Clean Typography */}
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-zinc-500 dark:text-zinc-500 tracking-wide uppercase mb-1">
+                    {item.label}
+                  </span>
+                  <span className="text-xl md:text-2xl font-semibold text-zinc-900 dark:text-zinc-50 tracking-tight">
+                    {item.value}
+                  </span>
+                </div>
+              </div>
 
-          </motion.div>
+              {/* The "Arc" interaction detail: sliding arrow */}
+              <div className="overflow-hidden p-2">
+                <ArrowUpRight 
+                  size={24} 
+                  strokeWidth={1.5}
+                  className="text-zinc-900 dark:text-zinc-50 opacity-0 -translate-x-full translate-y-full transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0" 
+                />
+              </div>
+            </motion.a>
+          ))}
         </div>
       </div>
     </section>
@@ -2214,835 +2063,827 @@ export function ContactSection() {
 }
 </file>
 
-<file path="src/components/HeroSection.tsx">
-import { Github, Linkedin, Instagram, Twitter } from "lucide-react";
-import { useEffect, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import "../App.css";
+<file path="src/components/Navigation.tsx">
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { ThemeToggle } from "./ThemeToggle"; 
 
-export function HeroSection() {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [animationsComplete, setAnimationsComplete] = useState(false);
+// The signature physical deceleration curve
+const customEase = [0.25, 1, 0.5, 1];
 
-  // Directly track the window scroll position with Framer Motion
-  const { scrollY } = useScroll();
-  
-  // Transform scroll position to specific vertical/horizontal shifts
-  const yName = useTransform(scrollY, [0, 1000], [0, -300]);
-  const xAboutDesktop = useTransform(scrollY, [0, 1000], [0, -400]);
-  const yAvatar = useTransform(scrollY, [0, 1000], [0, 200]);
-  const ySocialsDesktop = useTransform(scrollY, [0, 1000], [0, 300]);
+const navItems = [
+  { label: "Home", href: "#home" },
+  { label: "Projects", href: "#projects" },
+  { label: "Experience", href: "#experience" },
+  { label: "Contact", href: "#contact" },
+];
+
+export function Navigation() {
+  const [activeSection, setActiveSection] = useState("home");
+  const [isVisible, setIsVisible] = useState(true);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const lastScrollY = useRef(0);
+  const { scrollY, scrollYProgress } = useScroll();
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries.find((entry) => entry.isIntersecting);
+        if (visibleEntry) {
+          setActiveSection(visibleEntry.target.id);
+        }
+      },
+      { rootMargin: "-25% 0px -25% 0px", threshold: 0.1 } 
+    );
 
-    const timer = setTimeout(() => {
-      setAnimationsComplete(true);
-    }, 1300);
+    // Small timeout ensures sections are rendered before observing
+    setTimeout(() => {
+      navItems.forEach(({ href }) => {
+        const el = document.querySelector(href);
+        if (el) observer.observe(el);
+      });
+    }, 100);
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      clearTimeout(timer);
-    };
+    return () => observer.disconnect();
+  }, []);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setHasScrolled(latest > 20);
+    if (latest > 150 && latest > lastScrollY.current) {
+      setIsVisible(false);
+    } else {
+      setIsVisible(true);
+    }
+    lastScrollY.current = latest;
+  });
+
+  const scrollToSection = useCallback((href: string, sectionId: string) => {
+    setActiveSection(sectionId); 
+    const el = document.querySelector(href);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
   }, []);
 
   return (
     <>
-      <style>{`
-        @keyframes slideInFromTop {
-          0% { transform: translateY(-40vh); opacity: 0; }
-          100% { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes slideInFromLeft {
-          0% { transform: translateX(-100%); opacity: 0; }
-          100% { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes slideInFromBottom {
-          0% { transform: translateY(40%); opacity: 0; }
-          100% { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes slideInFromRight {
-          0% { transform: translate(100%, -50%); opacity: 0; }
-          100% { transform: translate(0, -50%); opacity: 1; }
-        }
-        .animate-slide-top { animation: slideInFromTop 1s ease-out forwards; }
-        .animate-slide-left { animation: slideInFromLeft 1s ease-out forwards; }
-        .animate-slide-bottom { animation: slideInFromBottom 1.2s ease-out forwards; }
-        .animate-slide-right { animation: slideInFromRight 1.1s ease-out forwards; }
-      `}</style>
-
-      <section
-        id="home"
-        className="relative min-h-screen flex items-center justify-center overflow-hidden transition-colors duration-500"
+      {/* Refined Scroll Progress Line */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-[1.5px] bg-zinc-900/20 dark:bg-zinc-100/20 origin-left z-[60]"
       >
-        <div className="absolute top-[5vh] md:top-[6vh] right-3 md:right-5 transform md:-translate-x-1/2 z-30">
-          <a
-            href="https://drive.google.com/file/d/1duCXXk6CCvQtwsI8yievs73X0xLVqvEc/view?usp=share_link"
-            target="_blank"
-            className="bg-emerald-400/80 hover:bg-emerald-600 text-black dark:text-white px-3 py-2 md:px-5 md:py-2 rounded-lg text-sm md:text-base font-medium shadow transition duration-300 hover:shadow-lg hover:shadow-emerald-400/60"
-          >
-            Download CV
-          </a>
+        <motion.div 
+          className="h-full bg-zinc-900 dark:bg-zinc-50"
+          style={{ scaleX: scrollYProgress, originX: 0 }}
+        />
+      </motion.div>
+
+      {/* ─── Desktop Nav ─── */}
+      <motion.nav
+        initial={{ y: -80, opacity: 0, filter: "blur(10px)" }}
+        animate={{ 
+          y: isVisible ? 0 : -80, 
+          opacity: isVisible ? 1 : 0,
+          filter: isVisible ? "blur(0px)" : "blur(10px)"
+        }}
+        transition={{ duration: 0.8, ease: customEase }}
+        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 hidden md:flex items-center gap-3"
+      >
+        {/* The Navigation Pill (Perfectly Centered) */}
+        <div
+          className={`relative flex items-center gap-1 px-2 py-2 rounded-full border transition-all duration-700 ease-out ${
+            hasScrolled
+              ? "bg-white/40 dark:bg-[#0a0a0a]/40 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
+              : "bg-transparent border-transparent"
+          }`}
+          style={{ WebkitBackdropFilter: hasScrolled ? "blur(24px)" : "none" }}
+        >
+          {navItems.map((item, index) => {
+            const sectionId = item.href.substring(1);
+            const isActive = sectionId === activeSection;
+            
+            return (
+              <motion.button
+                key={item.label}
+                onClick={() => scrollToSection(item.href, sectionId)}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.5,
+                  ease: customEase,
+                  delay: 0.1 + index * 0.05,
+                }}
+                className="relative px-5 py-2 rounded-full group"
+              >
+                <span
+                  className={`relative z-10 text-[13px] tracking-wide font-medium whitespace-nowrap transition-colors duration-500 ${
+                    isActive
+                      ? "text-zinc-900 dark:text-zinc-50"
+                      : "text-zinc-500 dark:text-zinc-500 group-hover:text-zinc-800 dark:group-hover:text-zinc-300"
+                  }`}
+                >
+                  {item.label}
+                </span>
+
+                {isActive && (
+                  <motion.div
+                    layoutId="desktop-nav-indicator"
+                    className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-zinc-900 dark:bg-zinc-50"
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 35,
+                    }}
+                  />
+                )}
+              </motion.button>
+            );
+          })}
         </div>
 
-        <motion.h1
-          className={`absolute max-sm:top-[40vh] text-[20vw] md:text-[20vw] font-heading3 text-black/15 dark:text-white/15 z-0 select-none tracking-tight leading-none text-center ${
-            !animationsComplete ? "animate-slide-top" : ""
+        {/* The Theme Toggle (Detached Satellite) */}
+        <div 
+           className={`flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-700 ease-out ${
+            hasScrolled
+              ? "bg-white/40 dark:bg-[#0a0a0a]/40 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
+              : "bg-transparent border-transparent"
           }`}
-          style={{ y: yName }}
         >
-          SHIV RAJPUT
-        </motion.h1>
+          <ThemeToggle />
+        </div>
+      </motion.nav>
 
-        <motion.div
-          className={`absolute left-0 top-0 h-full w-full flex items-center z-20 pointer-events-none ${
-            !animationsComplete ? "animate-slide-left" : ""
-          }`}
-          style={{ x: isMobile ? 0 : xAboutDesktop }}
-        >
-          <div
-            className="relative ml-4 md:ml-8 pointer-events-auto"
-            onMouseEnter={() => !isMobile && setIsHovered(true)}
-            onMouseLeave={() => !isMobile && setIsHovered(false)}
-            onClick={() => isMobile && setIsHovered(!isHovered)}
-          >
-            <div className="relative cursor-pointer group">
-              <div className="w-3 h-16 md:w-4 md:h-24 bg-gradient-to-b from-emerald-300 to-blue-400 rounded-full shadow-lg shadow-emerald-300/60 group-hover:shadow-emerald-300/90 transition-all duration-10 group-hover:scale-110 animate-pulse"></div>
-              <div
-                className={`absolute left-8 md:left-12 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
-                  isHovered ? "opacity-0" : "opacity-100"
-                }`}
+      {/* ─── Mobile Nav (Bottom Dock) ─── */}
+      <motion.nav
+        initial={{ y: 120, opacity: 0, filter: "blur(10px)" }}
+        animate={{ 
+          y: isVisible ? 0 : 120, 
+          opacity: isVisible ? 1 : 0, 
+          filter: isVisible ? "blur(0px)" : "blur(10px)" 
+        }}
+        transition={{ duration: 0.8, ease: customEase }}
+        className="fixed top-6 inset-x-0 mx-auto z-50 md:hidden flex items-center justify-center gap-2 w-[92%] max-w-[24rem]"
+      >
+        <div className="relative flex-1 flex items-center justify-between px-1.5 py-1.5 rounded-full bg-white/70 dark:bg-[#0a0a0a]/70 backdrop-blur-2xl border border-black/5 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          {navItems.map((item) => {
+            const sectionId = item.href.substring(1);
+            const isActive = sectionId === activeSection;
+            
+            return (
+              <button
+                key={item.label}
+                onClick={() => scrollToSection(item.href, sectionId)}
+                className="relative flex-1 py-3 px-1 rounded-full flex justify-center items-center"
               >
-                <span className="px-2 py-1 md:px-3 md:py-1 rounded-lg bg-white/10 dark:bg-white/10 backdrop-blur-lg border border-white/20 shadow">
-                  <span className="text-emerald-400 text-sm md:text-lg font-mono font-semibold whitespace-nowrap animate-pulse">
-                    {isMobile ? "<tap to decode/>" : "<hover to decode/>"}
-                  </span>
+                <span
+                  className={`relative z-10 text-[11px] tracking-wide font-medium whitespace-nowrap transition-colors duration-500 ${
+                    isActive
+                      ? "text-zinc-900 dark:text-zinc-50"
+                      : "text-zinc-500 dark:text-zinc-500"
+                  }`}
+                >
+                  {item.label}
                 </span>
-              </div>
-            </div>
 
-            <div
-              className={`absolute left-6 md:left-10 top-1/2 transform -translate-y-1/2 transition-all duration-500 ${
-                isHovered
-                  ? "translate-x-0 opacity-100"
-                  : "-translate-x-full opacity-0"
-              }`}
-            >
-              <div className="code-block rounded-xl p-4 md:p-8 w-72 md:w-[500px] backdrop-blur-lg bg-white/60 dark:bg-white/10 border border-zinc-300 dark:border-white/20 shadow-md transition-all text-zinc-800 dark:text-slate-200">
-                <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6 border-b border-emerald-400/20 pb-2 md:pb-3">
-                  <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-red-400"></div>
-                  <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-yellow-400"></div>
-                  <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-green-400"></div>
-                  <span className="text-slate-600 dark:text-slate-400 text-xs md:text-sm font-mono ml-2 md:ml-3">
-                    about-me.js
-                  </span>
-                </div>
+                {isActive && (
+                  <motion.div
+                    layoutId="mobile-nav-indicator"
+                    className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-zinc-900 dark:bg-zinc-50"
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 35,
+                    }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-                <div className="font-mono text-sm md:text-base space-y-2 md:space-y-3">
-                  <div className="text-purple-600 dark:text-purple-400">
-                    <span className="typewriter-text">const</span>{" "}
-                    <span className="text-blue-600 dark:text-blue-400">
-                      developer
-                    </span>{" "}
-                    = {"{"}
-                  </div>
-                  <div className="ml-4 md:ml-6 space-y-1 md:space-y-2">
-                    <div>
-                      <span className="text-blue-600 dark:text-blue-400">name</span>:{" "}
-                      <span className="text-green-600 dark:text-green-400">"Shiv Rajput"</span>,
-                    </div>
-                    <div>
-                      <span className="text-blue-600 dark:text-blue-400">role</span>:{" "}
-                      <span className="text-green-600 dark:text-green-400">"Full Stack Developer"</span>,
-                    </div>
-                    <div>
-                      <span className="text-blue-600 dark:text-blue-400">education</span>:{" "}
-                      <span className="text-green-600 dark:text-green-400">"B.Tech in Computer Science"</span>,
-                    </div>
-                    <div>
-                      <span className="text-blue-600 dark:text-blue-400">strengths</span>:{" "}
-                      <span className="text-green-600 dark:text-green-400">["Problem Solving", "Creative Thinking", "Rapid Prototyping"]</span>,
-                    </div>
-                    <div>
-                      <span className="text-blue-600 dark:text-blue-400">passion</span>:{" "}
-                      <span className="text-green-600 dark:text-green-400">"Building things from scratch & turning ideas into products"</span>,
-                    </div>
-                    <div>
-                      <span className="text-blue-600 dark:text-blue-400">location</span>:{" "}
-                      <span className="text-green-600 dark:text-green-400">"India (Remote-Friendly 🌍)"</span>,
-                    </div>
-                    <div>
-                      <span className="text-blue-600 dark:text-blue-400">availability</span>:{" "}
-                      <span className="text-green-600 dark:text-green-400">"Open for full-time, freelance, or startup collabs"</span>,
-                    </div>
-                    <div>
-                      <span className="text-blue-600 dark:text-blue-400">mission</span>:{" "}
-                      <span className="text-green-600 dark:text-green-400">"To solve real problems with clean code & bold ideas"</span>
-                    </div>
-                  </div>
-                  <div className="text-purple-600 dark:text-purple-400">{"}"}</div>
-                  <div className="mt-4 md:mt-6 pt-2 md:pt-3 border-t border-emerald-400/20">
-                    <div className="text-slate-600 dark:text-slate-400 text-xs md:text-sm">
-                      <span className="text-emerald-400">// </span>
-                      Let's build something unforgettable. Reach out anytime!
-                      <span className="terminal-cursor"></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          className={`absolute bottom-0 w-full flex justify-center z-10 pointer-events-none ${
-            !animationsComplete ? "animate-slide-bottom" : ""
-          }`}
-          style={{ y: yAvatar }}
-        >
-          <img
-            src="/avatar.png"
-            alt="avatar"
-            className="h-[60vh] md:h-[75vh] max-w-full object-contain grayscale opacity-90 pointer-events-none"
-          />
-        </motion.div>
-
-        <motion.div
-          className={`absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-30 ${
-            !animationsComplete ? "animate-slide-right" : ""
-          }`}
-          style={{
-            y: "-50%",
-            x: isMobile ? 0 : ySocialsDesktop
-          }}
-        >
-          <div className="backdrop-blur-md bg-white/40 dark:bg-white/5 p-2 md:p-4 rounded-lg md:rounded-xl border border-zinc-300 dark:border-white/10 shadow-md flex flex-col items-center space-y-3 md:space-y-6">
-            {[
-              { href: "https://github.com/srxshiv", icon: <Github className="w-4 h-4 md:w-5 md:h-5" /> },
-              { href: "https://linkedin.com/in/srxshiv", icon: <Linkedin className="w-4 h-4 md:w-5 md:h-5" /> },
-              { href: "https://instagram.com/srxshiv", icon: <Instagram className="w-4 h-4 md:w-5 md:h-5" /> },
-              { href: "https://twitter.com/srxshiv", icon: <Twitter className="w-4 h-4 md:w-5 md:h-5" /> },
-            ].map(({ href, icon }, idx) => (
-              <a
-                key={idx}
-                href={href}
-                target="_blank"
-                className="text-zinc-800 dark:text-white hover:text-emerald-400 transition-transform duration-200 hover:scale-125 md:hover:scale-150 hover:-translate-y-1"
-              >
-                {icon}
-              </a>
-            ))}
-          </div>
-        </motion.div>
-      </section>
+        {/* Mobile Theme Toggle Satellite */}
+        <div className="flex-shrink-0 flex items-center justify-center w-[52px] h-[52px] rounded-full bg-white/70 dark:bg-[#0a0a0a]/70 backdrop-blur-2xl border border-black/5 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+            <ThemeToggle />
+        </div>
+      </motion.nav>
     </>
   );
 }
 </file>
 
 <file path="src/components/ExperienceSection.tsx">
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import { Building, Calendar, MapPin } from "lucide-react";
+import { MapPin, Plus, ArrowRight } from "lucide-react";
+import { useState, useRef } from "react";
+import { motion, AnimatePresence, useScroll, useTransform, type Easing } from "framer-motion";
+
+const transitionEase: Easing = [0.16, 1, 0.3, 1];
 
 const experiences = [
   {
     company: "Messy Programmer",
     position: "AI Fullstack Developer",
-    duration: "Jan 2026 - Present",
-    location: "Cooch Behar, West Bengal",
+    duration: "Jan 2026 — Present",
+    location: "Cooch Behar, WB",
     description:
-      "Building high-performance AI-driven fullstack applications end-to-end using a TypeScript-first stack with modern cloud and automation tooling.",
+      "Building high-performance AI-driven fullstack applications for International clients end-to-end using a TypeScript-first stack with modern cloud and automation tooling.",
     achievements: [
-      "Engineered scalable fullstack apps using Next.js, React, Node.js, basically the full TypeScript stack, with Dockerized services for consistent deployments.",
-      "Developed backend systems with PostgreSQL, MongoDB, and Firebase, implementing secure OAuth 2.0 authentication and data workflows.",
+      "Engineered scalable fullstack apps using Next.js, React, Node.js with Dockerized services for consistent deployments.",
+      "Developed backend systems with PostgreSQL, MongoDB, and Firebase, implementing secure OAuth 2.0 authentication.",
       "Developed complex workflow automations using n8n, Zapier, and Pipedream with custom APIs and webhooks.",
       "Integrated GoHighLevel ecosystems and built internal tools using Retool, Payload CMS, and Directus.",
-      "Built and deployed cross-platform mobile apps using React Native."
     ],
     tech: [
       "Next.js",
-      "React",
-      "Node.js",
       "TypeScript",
+      "Node.js",
       "PostgreSQL",
-      "MongoDB",
-      "Firebase",
-      "Docker",
-      "OAuth 2.0",
       "n8n",
       "Zapier",
-      "Pipedream",
-      "GoHighLevel",
-      "Retool",
-      "Payload CMS",
-      "Directus",
-      "React Native"
+      "React Native",
+      'React'
     ],
   },
   {
     company: "Harshey Health Care Hospital",
     position: "Full Stack Developer",
-    duration: "Dec 2022 - Jan 2023",
+    duration: "Dec 2022 — Jan 2023",
     location: "Remote",
     description:
-      "Engineered a comprehensive Clinic Management System supporting 2–3 doctors and managing 200+ patient records to digitize daily operations.",
+      "Engineered a comprehensive Clinic Management System supporting multiple doctors and managing 200+ patient records to digitize daily operations.",
     achievements: [
       "Implemented secure token-based authentication for patient management, significantly reducing manual scheduling time.",
       "Designed RESTful APIs to optimize database operations for medical histories and billing.",
-      "Achieved sub-200ms data retrieval speeds through optimized MongoDB queries."
+      "Achieved sub-200ms data retrieval speeds through optimized MongoDB queries.",
     ],
-    tech: ["ReactJS", "Express.js", "MongoDB", "Node.js", "REST APIs"],
+    tech: ["React", "Express", "MongoDB", "Node.js", "REST APIs"],
   },
 ];
 
 export function ExperienceSection() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const sectionRef = useRef<HTMLElement>(null);
 
+  // Open the first item by default
+  const [expandedIndex, setExpandedIndex] = useState<number | null>();
+
+  // Scroll tracking for the fade in/out effect
   const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
+    target: sectionRef,
+    offset: ["start end", "end start"],
   });
 
-  // Maps the scroll progress to an X translation to slide text across the screen
-  const xParallax = useTransform(scrollYProgress, [0, 1], ["-10%", "30%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0, 1, 1, 0]);
+  const yParallax = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [40, 0, 0, -40]);
 
   return (
     <section
       id="experience"
-      ref={ref}
-      className="relative min-h-[100vh] py-32 px-6 overflow-hidden"
+      ref={sectionRef}
+      className="relative py-24 md:py-32 px-6 md:px-12 lg:px-24 max-w-6xl mx-auto overflow-hidden"
     >
-      <div className="max-w-4xl mx-auto">
-        {/* Title Section */}
-        <motion.h2
-          className="pointer-events-none absolute left-0 top-10 text-[30vw] md:text-[20vw] font-heading3 text-black/15 dark:text-white/15 z-0 select-none tracking-tight leading-none whitespace-nowrap"
-          style={{
-            x: xParallax
-          }}
-        >
-          EXPERIENCE
-        </motion.h2>
+      <motion.div
+        style={{ opacity, y: yParallax }}
+        className="relative z-10 w-full"
+      >
+        {/* Minimalist Section Header */}
+        <div className=" flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-8">
+          <div className="mb-20 md:mb-32">
+            <h1 className="text-6xl md:text-6xl font-medium tracking-tighter mb-6 text-zinc-900 dark:text-zinc-50">
+            Professional journey across development.
+            </h1>
+          </div>
+          <div className="hidden md:flex items-center gap-2 text-sm text-zinc-400 font-mono tracking-widest uppercase">
+            <span>0{experiences.length} Roles</span>
+          </div>
+        </div>
 
-        <div className="relative md:mt-[10rem] mt-12 z-10">
-          {/* Timeline line */}
-          <div className="absolute left-8 md:left-1/2 transform md:-translate-x-1/2 w-0.5 h-full bg-border"></div>
-
+        {/* The Interactive Ledger */}
+        <div className="flex flex-col">
           {experiences.map((exp, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.8, delay: index * 0.2 }}
-              className={`relative flex items-center mb-16 ${
-                index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-              }`}
-            >
-              {/* Timeline dot */}
-              <div className="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white dark:border-gray-900 shadow-lg z-10"></div>
-
-              {/* Content */}
-              <div
-                className={`flex-1 ml-16 md:ml-0 ${
-                  index % 2 === 0 ? "md:pr-8" : "md:pl-8"
-                }`}
-              >
-                <motion.div
-                  whileHover={{ scale: 1.02, y: -5 }}
-                  className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300"
-                >
-                  <div className="flex flex-wrap items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">
-                        {exp.position}
-                      </h3>
-                      <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium mb-2">
-                        <Building size={16} />
-                        {exp.company}
-                      </div>
-                    </div>
-                    <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                      <div className="flex items-center gap-1 mb-1">
-                        <Calendar size={14} />
-                        {exp.duration}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <MapPin size={14} />
-                        {exp.location}
-                      </div>
-                    </div>
-                  </div>
-
-                  <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed mb-6">
-                    {exp.description}
-                  </p>
-
-                  <div className="mb-6">
-                    <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3 uppercase tracking-wide">
-                      Key Achievements
-                    </h4>
-                    <ul className="space-y-2">
-                      {exp.achievements.map((achievement, i) => (
-                        <li
-                          key={i}
-                          className="flex items-start gap-2 text-zinc-600 dark:text-zinc-300"
-                        >
-                          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-                          {achievement}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3 uppercase tracking-wide">
-                      Technologies
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {exp.tech.map((tech) => (
-                        <span
-                          key={tech}
-                          className="px-3 py-1 text-sm bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-full border border-zinc-200 dark:border-zinc-700"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div>
+            <ExperienceRow
+              key={exp.company}
+              experience={exp}
+              isOpen={expandedIndex === index}
+              onToggle={() => setExpandedIndex(expandedIndex === index ? null : index)}
+            />
           ))}
         </div>
-      </div>
+      </motion.div>
+    </section>
+  );
+}
+
+function ExperienceRow({
+  experience,
+  isOpen,
+  onToggle,
+}: {
+  experience: (typeof experiences)[number];
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <motion.div
+      initial={false}
+      className={`border-zinc-200 dark:border-zinc-800 transition-colors duration-500 group ${
+        isOpen
+          ? "bg-zinc-50 dark:bg-zinc-900/50"
+          : "hover:bg-zinc-50 dark:hover:bg-zinc-900/30"
+      }`}
+    >
+      <button
+        onClick={onToggle}
+        className="w-full py-8 md:py-12 flex flex-col md:flex-row md:items-center text-left gap-4 md:gap-8 px-4 md:px-6"
+      >
+        {/* Left: Duration */}
+        <div className="md:w-1/4 shrink-0">
+          <span className="font-mono text-sm text-zinc-400 dark:text-zinc-500 tracking-tight">
+            {experience.duration}
+          </span>
+        </div>
+
+        {/* Center: Company Name (The massive typographic element) */}
+        <div className="md:w-1/2 flex-1">
+          <h3 className={`text-2xl md:text-4xl lg:text-4xl tracking-tighter transition-colors duration-500 ${isOpen ? "font-medium text-zinc-900 dark:text-zinc-50" : "font-light text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-300"}`}>
+            {experience.position}
+          </h3>
+        </div>
+
+        {/* Right: Position & Icon */}
+        <div className="md:w-1/4 flex justify-between md:justify-end items-center gap-6 mt-4 md:mt-0 shrink-0">
+          <span className="text-base md:text-lg font-light text-zinc-500 dark:text-zinc-400 text-left md:text-right">
+            {experience.company}
+          </span>
+          <motion.div
+            animate={{ rotate: isOpen ? 45 : 0 }}
+            transition={{ duration: 0.4, ease: transitionEase }}
+            className="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400 group-hover:text-zinc-900 group-hover:border-zinc-400 dark:group-hover:text-zinc-50 dark:group-hover:border-zinc-500 transition-colors duration-300"
+          >
+            <Plus size={16} strokeWidth={1.5} />
+          </motion.div>
+        </div>
+      </button>
+
+      {/* Expandable Content sub-grid */}
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.5, ease: transitionEase }}
+            className="overflow-hidden"
+          >
+            <div className="px-4 md:px-6 pb-12 pt-2 md:pt-4 grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-12">
+
+              {/* Left Column: Context & Tech */}
+              <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-2 text-zinc-400 dark:text-zinc-500">
+                    <MapPin size={14} />
+                    <span className="text-sm font-medium tracking-wide uppercase">{experience.location}</span>
+                  </div>
+                  <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-light text-base">
+                    {experience.description}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {experience.tech.map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-3 py-1 text-xs font-mono tracking-tight rounded-full bg-zinc-100 text-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Column: Achievements */}
+              <div className="flex flex-col">
+                <span className="text-xs font-mono tracking-widest text-zinc-400 uppercase mb-6">Key Achievements</span>
+                <ul className="flex flex-col gap-5">
+                  {experience.achievements.map((achievement, i) => (
+                    <motion.li
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 * i + 0.2, duration: 0.5, ease: transitionEase }}
+                      className="flex items-start gap-4 text-zinc-700 dark:text-zinc-300 text-base font-light"
+                    >
+                      <ArrowRight size={16} className="mt-1 shrink-0 text-zinc-300 dark:text-zinc-600" />
+                      <span className="leading-relaxed">{achievement}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
+
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+</file>
+
+<file path="src/components/HeroSection.tsx">
+"use client";
+
+import { Github, Linkedin, Instagram, Twitter, Download } from "lucide-react";
+import { motion } from "framer-motion";
+
+const customEase = [0.25, 1, 0.5, 1];
+
+const socialLinks = [
+  { name: "GH", href: "https://github.com/srxshiv", icon: Github },
+  { name: "LI", href: "https://linkedin.com/in/srxshiv", icon: Linkedin },
+  { name: "TW", href: "https://twitter.com/srxshiv", icon: Twitter },
+  { name: "IG", href: "https://instagram.com/srxshiv", icon: Instagram },
+];
+
+export function HeroSection() {
+  return (
+    // 'sticky top-0' keeps it pinned. '-z-10' puts it behind the next section.
+    <section className="sticky top-0 h-screen w-full flex flex-col justify-center items-center px-6 md:px-12 -z-10 overflow-hidden">
+      
+      {/* Centered Main Text */}
+      <motion.div
+        initial={{ opacity: 0, filter: "blur(12px)", y: 20 }}
+        animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+        transition={{ duration: 1.2, ease: customEase, delay: 0.1 }}
+        className="flex-1 flex items-center justify-center"
+      >
+        <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50">
+          Hi, I'm Shiv.
+        </h1>
+      </motion.div>
+
+      {/* Bottom Bar: Resume & Socials */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.2, ease: customEase, delay: 0.4 }}
+        className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between gap-6 pb-12"
+      >
+        <a
+          href="https://drive.google.com/file/d/1GHUuIceA_ufZ-ypgUDFTQ1IniPbyJEk2/view?usp=share_link"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 px-6 py-3 text-zinc-500 dark:text-zinc-400 text-sm font-medium hover:text-zinc-900 dark:hover:text-zinc-50 border border-zinc-200 dark:border-zinc-800 rounded-full transition-colors duration-300"
+        >
+          <Download className="w-3.5 h-3.5" />
+          Resume
+        </a>
+        
+        <div className="flex items-center gap-6">
+          {socialLinks.map((social) => (
+            <a
+              key={social.name}
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-50 transition-colors duration-300"
+            >
+              <social.icon className="w-5 h-5 stroke-[1.5]" />
+            </a>
+          ))}
+        </div>
+      </motion.div>
     </section>
   );
 }
 </file>
 
 <file path="src/components/ProjectsSection.tsx">
-import {
-  ExternalLink,
-  Github,
-  X,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import { useState, useRef, useEffect } from "react";
-import { motion, useInView, useAnimation, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { ExternalLink, Github, ArrowUpRight } from "lucide-react";
+import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
-import '../App.css'
+const transitionEase = [0.16, 1, 0.3, 1];
 
 const projects = [
   {
     title: "DevsOwl",
     image:
-      "https://res.cloudinary.com/ddyehcaeo/image/upload/v1771333552/z8hginpogt2glymf9sle.png", 
+      "https://res.cloudinary.com/ddyehcaeo/image/upload/v1771333552/z8hginpogt2glymf9sle.png",
     description:
-      "A centralized developer portfolio aggregator that visualizes cross-platform data (GitHub, leetcode etc.) to create a dynamic 'proof-of-work' profile. It features automated data synchronization using GraphQL, SEO-friendly dynamic routing, and a high-performance database schema.",
-    techstack: [
-      "Next.js",
-      "TypeScript",
-      "PostgreSQL",
-      "Prisma",
-      "GraphQL",
-      "Tailwind",
-    ],
+      "A centralized developer portfolio aggregator that visualizes cross-platform data. Features automated synchronization using GraphQL and SEO-friendly dynamic routing.",
+    techstack: ["Next.js", "TypeScript", "PostgreSQL", "GraphQL"],
     github: "https://github.com/SSharma1103/devora",
     live: "https://devsowl.com/",
-    features: [
-      "GitHub Open Source & LeetCode data visualization",
-      "Automated data synchronization",
-      "SEO-friendly dynamic routing",
-      "Secure OAuth authentication"
-    ]
   },
   {
     title: "Heyllo.ai",
     image:
       "https://res.cloudinary.com/ddyehcaeo/image/upload/v1753271374/Screenshot_2025-07-23_at_5.19.20_PM_gkuvmm.png",
     description:
-      "An AI-driven interview prep app that simulates real-time call interviews, dynamically generating follow-up questions based on your responses. After the session, it provides structured feedback and performance insights to help you improve confidently.",
-    techstack: [
-      "Next.js",
-      "React",
-      "Firebase",
-      "Tailwind",
-      "TypeScript",
-      "shadcn",
-      "LLM/AI-Integration",
-    ],
+      "An AI-driven interview prep app simulating real-time call interviews. Dynamically generates follow-up questions and provides structured performance insights.",
+    techstack: ["Next.js", "React", "Firebase", "AI Integration"],
     github: "https://github.com/srxshiv/heyllo.ai",
     live: "https://heylloai.vercel.app",
-    features: [
-      "Real-time AI interview simulation",
-      "Dynamic follow-up question generation",
-      "Structured performance feedback",
-      "Progress tracking dashboard"
-    ]
   },
   {
     title: "Wispr Flow",
-    image: "https://res.cloudinary.com/ddyehcaeo/image/upload/v1766927655/Screenshot_2025-12-28_at_6.43.16_PM_ydntxb.png", 
+    image:
+      "https://res.cloudinary.com/ddyehcaeo/image/upload/v1766927655/Screenshot_2025-12-28_at_6.43.16_PM_ydntxb.png",
     description:
-      "A desktop-native voice-to-text application that enables real-time transcription directly into any active input field. It leverages Tauri to bridge a React frontend with a Rust backend, handling system-level tasks like global hotkey management (Option+K), OS accessibility permissions, and simulated keyboard events for seamless dictation.",
-    techstack: [
-      "Tauri",
-      "Rust",
-      "React",
-      "TypeScript",
-      "Web Audio API",
-    ],
+      "A desktop-native voice-to-text application bridging a React frontend with a Rust backend via Tauri. Handles system-level tasks and OS accessibility permissions.",
+    techstack: ["Tauri", "Rust", "React", "TypeScript"],
     github: "https://github.com/srxshiv/wispr_flow_tauri.git",
-},
+  },
   {
     title: "Uniwizz",
     image:
       "https://res.cloudinary.com/ddyehcaeo/image/upload/v1753271528/IMG_0490_md8el5.jpg",
     description:
-      "A college-exclusive marketplace platform where students can buy/sell items, offer freelance services, and chat in real-time. Features include official university email verification, OTP-based login, image uploads, and a seamless user experience. Deployed on a VPS. Test it out - test@muj.manipal.edu pass-123456",
-    techstack: [
-      "React",
-      "MongoDB",
-      "JavaScript",
-      "Tailwind",
-      "Express",
-      "WebSocket",
-      "Node.js",
-    ],
+      "A college-exclusive marketplace for buying/selling items and freelance services. Features official university email verification and real-time WebSocket chat.",
+    techstack: ["React", "MongoDB", "Express", "WebSocket"],
     github: "https://github.com/srxshiv/UniWizz-frontend",
     live: "https://www.uniwizz.in",
-    features: [
-      "University email verification system",
-      "Real-time chat with WebSocket",
-      "Marketplace for buying/selling",
-      "Freelance services platform",
-      "Image upload functionality"
-    ]
   },
   {
     title: "Broke No More",
     image:
       "https://res.cloudinary.com/ddyehcaeo/image/upload/v1753394494/Screenshot_2025-07-25_at_3.20.32_AM_l33ytb.png",
     description:
-      "A personal finance visualizer that helps users track spending through intuitive pie charts and graphs. It supports setting budgets, adding transactions, and categorizing expenses for clear, organized financial insights.",
-    techstack: [
-      "Next.js",
-      "React",
-      "MongoDB",
-      "Tailwind",
-      "TypeScript",
-      "shadcn",
-    ],
+      "A personal finance visualizer tracking spending through intuitive charts. Supports budget setting, transaction categorization, and clear financial insights.",
+    techstack: ["Next.js", "MongoDB", "Tailwind"],
     github: "https://github.com/srxshiv/BrokeNoMore.git",
     live: "https://broke-no-more-seven.vercel.app",
-    features: [
-      "Interactive pie charts and graphs",
-      "Budget setting and tracking",
-      "Transaction categorization",
-      "Financial insights dashboard"
-    ]
-  },
-  {
-    title: "Github-Profile-Analyzer",
-    image:
-      "https://res.cloudinary.com/ddyehcaeo/image/upload/v1753450510/Screenshot_2025-07-25_at_7.04.02_PM_kqoyag.png",
-    description:
-      "A tool to see all the repositories of a user and their contributions history visually.",
-    techstack: [
-      "React",
-      "Tailwind",
-      "TypeScript",
-      "shadcn",
-    ],
-    github: "https://github.com/srxshiv/Github-Profile-Analyzer.git",
-    live: "https://gitprofileanalyzer.vercel.app",
-    features: [
-      "Repository visualization",
-      "Contribution history graphs",
-      "User statistics display",
-      "Interactive data charts"
-    ]
-  },
+  }
 ];
 
-const techIcons: Record<string, string> = {
-  React: "⚛️",
-  "Node.js": "🟢",
-  Express: "🚂",
-  MongoDB: "🍃",
-  PostgreSQL: "🐘",
-  Prisma: "💎",
-  GraphQL: "🕸️",
-  TypeScript: "🔷",
-  JavaScript: "🟨",
-  Firebase: "🔥",
-  Tailwind: "🎨",
-  "Next.js": "▲",
-  WebSocket: "🔌",
-  shadcn: "🧩",
-  "LLM/AI-Integration": "🧠",
-  Redux: "📦",
-  Rust: "🦀",
-  Tauri: "♉",
-  "Web Audio API": "🔊", 
-};
-
 export function ProjectsSection() {
-  const [selectedTechs, setSelectedTechs] = useState<string[]>([]);
-  const [showAllProjects, setShowAllProjects] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, margin: "-100px" });
+  const [activeIndex, setActiveIndex] = useState();
+  const active = projects[activeIndex];
 
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+  const handleSelect = useCallback((index: number) => {
+    setActiveIndex(index);
   }, []);
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  // EXACT parallax from your original code
-  const xParallaxDesktop = useTransform(scrollYProgress, [0, 1], ["0%", "-40%"]);
-  const xParallaxMobile = useTransform(scrollYProgress, [0, 1], ["0%", "-20%"]);
-
-  const allTechs = Array.from(
-    new Set(projects.flatMap((project) => project.techstack))
-  ).sort();
-
-  const filteredProjects = selectedTechs.length === 0
-    ? projects
-    : projects.filter((project) =>
-        selectedTechs.some((tech) => project.techstack.includes(tech))
-      );
-
-  const toggleTech = (tech: string) => {
-    setSelectedTechs((prev) =>
-      prev.includes(tech) ? prev.filter((t) => t !== tech) : [...prev, tech]
-    );
-  };
-
-  const clearFilters = () => setSelectedTechs([]);
-  const toggleShowAllProjects = () => setShowAllProjects(!showAllProjects);
-
-  const scrollCarousel = (direction: 'left' | 'right') => {
-    if (carouselRef.current) {
-      const scrollAmount = carouselRef.current.offsetWidth * 0.8;
-      carouselRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
 
   return (
     <section
       id="projects"
-      ref={ref}
-      className="relative min-h-[100vh] py-20 md:py-32 px-4 md:px-6 overflow-hidden"
+      className="relative min-h-screen py-32 md:py-48 px-6 md:px-12 lg:px-24 max-w-7xl mx-auto overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto">
-        {/* EXACT Original Parallax Title */}
-        <motion.h2
-          className="pointer-events-none absolute left-0 top-[3rem] md:top-[6rem] text-[25vw] md:text-[22vw] font-heading3 text-black/15 dark:text-white/15 z-0 select-none tracking-tight leading-none whitespace-nowrap"
-          style={{
-            x: isMobile ? xParallaxMobile : xParallaxDesktop
-          }}
-        >
-          PROJECTS
-        </motion.h2>
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-10%" }}
+        transition={{ duration: 0.8, ease: transitionEase }}
+        className="relative z-10 w-full max-w-6xl mx-auto flex flex-col h-full justify-between"
+      >
+        {/* Section Header */}
+        <div className="mb-20 md:mb-32">
+          <h1 className="text-6xl md:text-8xl font-medium tracking-tighter mb-6 text-zinc-900 dark:text-zinc-50">
+            Selected Works.
+          </h1>
+        </div>
 
-        {/* Tech Filter Buttons - Made subtler to prevent jumping */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative z-10 mb-12 md:mb-16 mt-8 md:mt-24 px-2"
-        >
-          <div className="flex flex-wrap gap-2 md:gap-3 justify-center items-center mb-6 md:mb-8">
-            {allTechs.map((tech) => {
-              const isSelected = selectedTechs.includes(tech) || selectedTechs.length === 0;
-              return (
-                <button
-                  key={tech}
-                  onClick={() => toggleTech(tech)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-300
-                    ${isSelected
-                      ? "bg-black text-white dark:bg-white dark:text-black shadow-md"
-                      : "bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700"
-                    }`}
-                >
-                  <span className="text-sm">{techIcons[tech] || "🔧"}</span>
-                  <span>{tech}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="flex justify-center gap-3 md:gap-4 flex-wrap">
-            {selectedTechs.length > 0 && (
+        {/* Desktop: Split Panel Layout */}
+        <div className="hidden md:grid md:grid-cols-[1fr_1.2fr] gap-16 items-start">
+          {/* Left — Project List */}
+          <nav aria-label="Project list" className="flex flex-col">
+            {projects.map((project, index) => (
               <button
-                onClick={clearFilters}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 transition-colors hover:bg-gray-200 dark:hover:bg-zinc-700 shadow-sm"
+                key={project.title}
+                onClick={() => window.open(project.live ?? project.github)}
+                onMouseEnter={() => handleSelect(index)}
+                aria-current={index === activeIndex ? "true" : undefined}
+                className={`group relative text-left py-6 transition-all duration-500 border-b border-zinc-200 dark:border-zinc-800 first:border-t ${
+                  index === activeIndex
+                    ? "opacity-100"
+                    : "opacity-40 hover:opacity-70"
+                }`}
               >
-                <X size={16} />
-                {!isMobile && <span>Clear Filters</span>}
-              </button>
-            )}
-
-            <button
-              onClick={toggleShowAllProjects}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white dark:bg-white dark:text-black transition-colors hover:bg-gray-800 dark:hover:bg-gray-200 shadow-sm"
-            >
-              {showAllProjects ? (
-                <>
-                  <ChevronLeft size={16} />
-                  {!isMobile && <span>View Carousel</span>}
-                </>
-              ) : (
-                <>
-                  {!isMobile && <span>Show All Projects</span>}
-                  <ChevronRight size={16} />
-                </>
-              )}
-            </button>
-          </div>
-        </motion.div>
-
-        {/* Projects Display - Smooth Toggle using AnimatePresence */}
-        <AnimatePresence mode="wait">
-          {showAllProjects ? (
-            /* GRID VIEW */
-            <motion.div
-              key="grid"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-2 md:px-0"
-            >
-              {filteredProjects.map((project, index) => (
-                <ProjectCard key={project.title} project={project} index={index} />
-              ))}
-            </motion.div>
-          ) : (
-            /* CAROUSEL VIEW */
-            <motion.div
-              key="carousel"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="relative z-10 px-2 md:px-0"
-            >
-              <button 
-                onClick={() => scrollCarousel('left')}
-                className="hidden md:flex absolute -left-4 lg:-left-12 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/80 dark:bg-black/80 backdrop-blur border border-black/10 dark:border-white/10 shadow-lg hover:bg-white dark:hover:bg-black transition-all"
-              >
-                <ChevronLeft size={24} className="text-black dark:text-white" />
-              </button>
-
-              <div
-                ref={carouselRef}
-                className="flex overflow-x-auto scrollbar-hide pb-8 gap-6 snap-x snap-mandatory"
-              >
-                {filteredProjects.map((project, index) => (
-                  <div key={project.title} className="flex-shrink-0 w-[85vw] md:w-[60vw] lg:w-[45vw] snap-center">
-                    <ProjectCard project={project} index={index} />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-baseline gap-4">
+                    <span className="text-sm font-mono text-zinc-400 dark:text-zinc-500 tabular-nums">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+                      {project.title}
+                    </span>
                   </div>
-                ))}
-              </div>
+                  <ArrowUpRight
+                    size={20}
+                    className={`text-zinc-400 dark:text-zinc-500 transition-all duration-300 ${
+                      index === activeIndex
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 -translate-x-4"
+                    }`}
+                  />
+                </div>
 
-              <button 
-                onClick={() => scrollCarousel('right')}
-                className="hidden md:flex absolute -right-4 lg:-right-12 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/80 dark:bg-black/80 backdrop-blur border border-black/10 dark:border-white/10 shadow-lg hover:bg-white dark:hover:bg-black transition-all"
-              >
-                <ChevronRight size={24} className="text-black dark:text-white" />
+                {/* Tech stack shown inline on active */}
+                <motion.div
+                  initial={false}
+                  animate={{
+                    height: index === activeIndex ? "auto" : 0,
+                    opacity: index === activeIndex ? 1 : 0,
+                  }}
+                  transition={{ duration: 0.4, ease: transitionEase }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex flex-wrap gap-3 mt-4 ml-10">
+                    {project.techstack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="text-sm font-medium text-zinc-500 dark:text-zinc-500"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
               </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+            ))}
+          </nav>
+
+          {/* Right — Preview Panel */}
+          <div className="sticky top-40">
+            <AnimatePresence mode="popLayout">
+              {/* FIX: Ensure `active` exists before rendering the desktop preview to prevent mobile crashes */}
+              {active && (
+                <motion.div
+                  key={active.title}
+                  initial={{ opacity: 0, filter: "blur(10px)", y: 20 }}
+                  animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                  exit={{ opacity: 0, filter: "blur(10px)", y: -20 }}
+                  transition={{ duration: 0.5, ease: transitionEase }}
+                  className="flex flex-col gap-8"
+                >
+                  {/* Image */}
+                  <div className="relative aspect-[16/10] rounded-3xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl">
+                    <img
+                      src={active.image}
+                      alt={`Screenshot of ${active.title}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Details */}
+                  <div className="flex flex-col gap-5 px-2">
+                    <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-lg">
+                      {active.description}
+                    </p>
+
+                    {/* Links */}
+                    <div className="flex items-center gap-6">
+                      {active.github && (
+                        <a
+                          href={active.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-base font-medium text-zinc-900 dark:text-zinc-50 hover:text-zinc-500 transition-colors"
+                        >
+                          <Github size={18} />
+                          Source
+                        </a>
+                      )}
+                      {active.live && (
+                        <a
+                          href={active.live}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-base font-medium text-zinc-900 dark:text-zinc-50 hover:text-zinc-500 transition-colors"
+                        >
+                          <ExternalLink size={18} />
+                          Live
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Mobile: Minimal Accordion List */}
+        <div className="md:hidden flex flex-col">
+          {projects.map((project, index) => (
+            <MobileProjectCard
+              key={project.title}
+              project={project}
+              index={index}
+              isOpen={index === activeIndex}
+              onToggle={() =>
+                setActiveIndex(index === activeIndex ? -1 : index)
+              }
+            />
+          ))}
+        </div>
+      </motion.div>
     </section>
   );
 }
 
-// Clean, functional card component used for BOTH Grid and Carousel to ensure consistency
-function ProjectCard({ project, index }: { project , index: number }) {
+function MobileProjectCard({
+  project,
+  index,
+  isOpen,
+  onToggle,
+}: {
+  project: (typeof projects)[number];
+  index: number;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
   return (
-    <div className="group relative h-[450px] md:h-[500px] rounded-2xl overflow-hidden shadow-lg border border-black/5 dark:border-white/10 bg-zinc-900">
-      {/* Background Image */}
-      <img
-        src={project.image}
-        alt={project.title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-40"
-      />
-      
-      {/* Permanent Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-90" />
-
-      {/* Content Container */}
-      <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end text-white">
-        
-        {/* Always visible title */}
-        <h3 className="text-2xl md:text-3xl font-bold mb-2 transform transition-transform duration-300 group-hover:-translate-y-2">
-          {project.title}
-        </h3>
-
-        {/* Tech Stack always visible slightly faded */}
-        <div className="flex flex-wrap gap-2 mb-4 transform transition-all duration-300 group-hover:-translate-y-2">
-          {project.techstack.slice(0, 4).map((tech: string) => (
-            <span key={tech} className="px-2.5 py-1 rounded-md bg-white/10 backdrop-blur-sm border border-white/20 text-xs font-semibold tracking-wide">
-              {tech}
-            </span>
-          ))}
-          {project.techstack.length > 4 && (
-            <span className="px-2.5 py-1 rounded-md bg-white/5 text-xs text-white/60">
-              +{project.techstack.length - 4}
-            </span>
-          )}
+    <div className="border-b border-zinc-200 dark:border-zinc-800 first:border-t">
+      {/* Main Toggle Header */}
+      <button
+        onClick={onToggle}
+        className={`w-full flex items-center justify-between py-6 text-left transition-opacity duration-300 ${
+          isOpen ? "opacity-100" : "opacity-40"
+        }`}
+      >
+        <div className="flex items-baseline gap-4">
+          <span className="text-xs font-mono text-zinc-400 dark:text-zinc-500 tabular-nums">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <span className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+            {project.title}
+          </span>
         </div>
+        <motion.div
+          animate={{ rotate: isOpen ? 45 : 0 }}
+          transition={{ duration: 0.3, ease: transitionEase }}
+        >
+          <ArrowUpRight size={18} className="text-zinc-400" />
+        </motion.div>
+      </button>
 
-        {/* Hidden content that slides up smoothly on hover */}
-        <div className="h-0 opacity-0 overflow-hidden transition-all duration-300 group-hover:h-auto group-hover:opacity-100 group-hover:mb-2">
-          <p className="text-sm md:text-base text-zinc-300 line-clamp-3 mb-6">
-            {project.description}
-          </p>
+      {/* Expanded Content */}
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.5, ease: transitionEase }}
+            className="overflow-hidden"
+          >
+            <div className="pb-8 flex flex-col gap-6">
+              <motion.div 
+                initial={{ scale: 0.95 }}
+                animate={{ scale: 1 }}
+                className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
+              >
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover"
+                />
+              </motion.div>
 
-          <div className="flex gap-4">
-            {project.live && (
-              <a
-                href={project.live}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-5 py-2.5 bg-white text-black text-sm font-bold rounded-full hover:bg-zinc-200 transition-colors"
-              >
-                <ExternalLink size={16} /> Live Demo
-              </a>
-            )}
-            {project.github && (
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-5 py-2.5 bg-black/50 text-white text-sm font-bold rounded-full border border-white/30 hover:bg-black/80 transition-colors"
-              >
-                <Github size={16} /> Source
-              </a>
-            )}
-          </div>
-        </div>
-      </div>
+              <div className="flex flex-col gap-4 px-1">
+                <p className="text-zinc-500 dark:text-zinc-400 text-[15px] leading-relaxed">
+                  {project.description}
+                </p>
+
+                {/* Minimalist Tech Badges */}
+                <div className="flex flex-wrap gap-x-4 gap-y-2">
+                  {project.techstack.map((tech) => (
+                    <span
+                      key={tech}
+                      className="text-xs font-medium text-zinc-400 dark:text-zinc-500"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-6 pt-2">
+                  {project.github && (
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-50"
+                    >
+                      <Github size={16} />
+                      Source
+                    </a>
+                  )}
+                  {project.live && (
+                    <a
+                      href={project.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-50"
+                    >
+                      <ExternalLink size={16} />
+                      Live
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

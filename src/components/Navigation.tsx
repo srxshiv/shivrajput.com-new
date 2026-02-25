@@ -7,6 +7,7 @@ const customEase = [0.25, 1, 0.5, 1];
 
 const navItems = [
   { label: "Home", href: "#home" },
+  { label: "What I Do", href: "#services" },
   { label: "Projects", href: "#projects" },
   { label: "Experience", href: "#experience" },
   { label: "Contact", href: "#contact" },
@@ -73,14 +74,16 @@ export function Navigation() {
 
       {/* ─── Desktop Nav ─── */}
       <motion.nav
-        initial={{ y: -80, opacity: 0, filter: "blur(10px)" }}
+        initial={{ y: -80, x: "-50%", opacity: 0, filter: "blur(10px)" }} // Added x: "-50%" to lock to center
         animate={{ 
           y: isVisible ? 0 : -80, 
+          x: "-50%", // Added x: "-50%"
           opacity: isVisible ? 1 : 0,
           filter: isVisible ? "blur(0px)" : "blur(10px)"
         }}
         transition={{ duration: 0.8, ease: customEase }}
-        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 hidden md:flex items-center gap-3"
+        // Removed -translate-x-1/2 from className as Framer Motion handles it now
+        className="fixed top-6 left-1/2 z-50 hidden md:flex items-center gap-3"
       >
         {/* The Navigation Pill (Perfectly Centered) */}
         <div
@@ -155,7 +158,7 @@ export function Navigation() {
           filter: isVisible ? "blur(0px)" : "blur(10px)" 
         }}
         transition={{ duration: 0.8, ease: customEase }}
-        className="fixed bottom-6 inset-x-0 mx-auto z-50 md:hidden flex items-center justify-center gap-2 w-[92%] max-w-[24rem]"
+        className="fixed top-6 inset-x-0 mx-auto z-50 md:hidden flex items-center justify-center gap-2 w-[92%] max-w-[24rem]"
       >
         <div className="relative flex-1 flex items-center justify-between px-1.5 py-1.5 rounded-full bg-white/70 dark:bg-[#0a0a0a]/70 backdrop-blur-2xl border border-black/5 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
           {navItems.map((item) => {
