@@ -6,9 +6,9 @@ import { ThemeToggle } from "./ThemeToggle";
 const customEase = [0.25, 1, 0.5, 1];
 
 const navItems = [
-  { label: "Home", href: "#home" },
+  { label: "Who I am", href: "#home" },
   { label: "What I Do", href: "#services" },
-  { label: "Projects", href: "#projects" },
+  { label: "What I have done", href: "#projects" },
   { label: "Experience", href: "#experience" },
   { label: "Contact", href: "#contact" },
 ];

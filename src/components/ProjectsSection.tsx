@@ -67,7 +67,7 @@ export function ProjectsSection() {
   return (
     <section
       id="projects"
-      className="relative min-h-screen py-32 md:py-48 px-6 md:px-12 lg:px-24 max-w-7xl mx-auto overflow-hidden"
+      className="relative min-h-screen py-32 md:py-38 px-6 md:px-12 lg:px-24 max-w-7xl mx-auto overflow-hidden"
     >
       <motion.div
         initial={{ opacity: 0, y: 40 }}
