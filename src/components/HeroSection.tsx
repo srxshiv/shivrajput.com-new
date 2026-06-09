@@ -38,7 +38,7 @@ export function HeroSection() {
         className="w-full max-w-2xl flex flex-col md:flex-row items-center justify-center gap-10 pb-24 md:pb-32"
       >
         <a
-          href="https://drive.google.com/file/d/1GHUuIceA_ufZ-ypgUDFTQ1IniPbyJEk2/view?usp=share_link"
+          href="https://drive.google.com/file/d/1lIz1QREayMF19P8FzrT7wPvqS1lICfuj/view?usp=share_link"
           target="_blank"
           rel="noopener noreferrer"
           // Scaled up text, icon, and padding
