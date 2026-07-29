@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+/* class-based dark mode (toggled by next-themes) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─────────────────────────────────────────────
+   Tokens ported from shivrajput.com —
+   Apple-inspired zinc system, blue accent.
+   ───────────────────────────────────────────── */
+:root {
+  --background: #ffffff;
+  --surface: #fafafa;
+  --surface-2: #f4f4f5;
+  --foreground: #171717;
+  --muted: #666666;
+  --faint: #999999;
+  --line: #e7e7e7;
+  --panel: #fafafa;
+  --panel-hover: #f4f4f5;
+  --accent: hsl(221 100% 55%);
+  --glow: rgba(34, 102, 255, 0.14);
+}
+
+.dark {
+  --background: #0f0f0f;
+  --surface: #141414;
+  --surface-2: #1a1a1a;
+  --foreground: #f2f2f2;
+  --muted: #b3b3b3;
+  --faint: #7d7d7d;
+  --line: #262626;
+  --panel: #141414;
+  --panel-hover: #1a1a1a;
+  --accent: hsl(221 100% 65%);
+  --glow: rgba(34, 102, 255, 0.28);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-panel: var(--panel);
+  --color-panel-hover: var(--panel-hover);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.4s ease, color 0.4s ease;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+/* handwritten annotations — Borel, the quirk from the old site */
+.handwritten {
+  font-family: var(--font-borel), cursive;
+  font-weight: 400;
+  color: var(--faint);
+}
+
+/* glass — floating chrome (nav pill, palette) */
+.glass {
+  background: color-mix(in srgb, var(--background) 65%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--line);
+}
+
+/* soft blue bloom, used very sparingly */
+.glow-accent {
+  box-shadow: 0 0 40px var(--glow);
+}
+
+/* kbd chip for ⌘K hints */
+.kbd {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+}
+
+/* horizontal rails — hide scrollbar, keep scrollability */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* receipt card details */
+.receipt-edge {
+  /* perforated top/bottom edge via radial gradient */
+  --hole: var(--background);
+  background-image: radial-gradient(
+    circle at 8px 50%,
+    var(--hole) 4px,
+    transparent 4.5px
+  );
+  background-size: 16px 100%;
+  height: 8px;
+}
+.dashed-row {
+  border-bottom: 1px dashed var(--line);
+}
+.barcode {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--foreground) 0 2px,
+    transparent 2px 4px,
+    var(--foreground) 4px 5px,
+    transparent 5px 9px,
+    var(--foreground) 9px 12px,
+    transparent 12px 14px
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
