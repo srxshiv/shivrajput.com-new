@@ -139,7 +139,7 @@ export function ProfileRail() {
           <span className="absolute h-full w-full animate-ping rounded-full bg-emerald-500/60" />
           <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-500" />
         </span>
-        Building at Medikzo · {site.location}
+        Currently building at Medikzo
       </div>
 
       <h1 className="text-[2.6rem] font-medium leading-[1.02] tracking-tighter text-foreground">

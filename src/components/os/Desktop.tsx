@@ -416,7 +416,7 @@ export function Desktop() {
   const stageApp = APPS.find((a) => a.id === activeApp)!;
 
   return (
-    <div className="relative h-svh select-none overflow-hidden">
+    <div className="relative h-svh overflow-hidden">
       <AnimatePresence>
         {!booted && <BootScreen onDone={() => setBooted(true)} />}
       </AnimatePresence>

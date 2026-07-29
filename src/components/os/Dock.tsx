@@ -95,7 +95,7 @@ export function Dock({
       initial={{ y: 90, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: "spring", stiffness: 220, damping: 24, delay: 0.4 }}
-      className="pointer-events-auto fixed bottom-3 left-1/2 z-[60] -translate-x-1/2"
+      className="pointer-events-auto fixed bottom-3 left-1/2 z-[60] -translate-x-1/2 select-none"
     >
       <div
         onMouseMove={(e) => mouseX.set(e.pageX)}

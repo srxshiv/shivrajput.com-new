@@ -50,7 +50,7 @@ function ProjectCard({
       {/* giant outlined numeral peeking above the card */}
       <span
         aria-hidden
-        className="pointer-events-none absolute -top-1 left-2 z-0 select-none font-mono text-[5.5rem] font-bold leading-none tracking-tighter text-transparent opacity-60 [-webkit-text-stroke:1.5px_var(--line)]"
+        className="pointer-events-none absolute -top-2 left-1 z-0 select-none font-mono text-[6rem] font-bold leading-none tracking-tighter text-transparent opacity-90 [-webkit-text-stroke:2px_var(--faint)]"
       >
         {String(index + 1).padStart(2, "0")}
       </span>
@@ -321,7 +321,7 @@ export function WorkContent() {
 
   return (
     <div className="py-5">
-      <div className="flex items-center justify-between px-5">
+      <div className="flex items-center justify-between pl-10 pr-6">
         <p className="handwritten rotate-[-2deg] text-lg">
           five case files — drag through, open one →
         </p>
@@ -354,7 +354,9 @@ export function WorkContent() {
         onMouseUp={endDrag}
         onMouseLeave={endDrag}
         onClickCapture={onClickCapture}
-        className={`no-scrollbar mt-2 flex snap-x snap-mandatory gap-6 overflow-x-auto px-5 pb-4 pt-2 select-none ${
+        // scroll-pl matches pl — without it snap-start pins the first card
+        // flush to the container edge and eats the padding
+        className={`no-scrollbar mt-2 flex snap-x snap-mandatory gap-7 overflow-x-auto scroll-pl-10 py-2 pb-4 pl-10 pr-6 select-none ${
           grabbing ? "cursor-grabbing" : "cursor-grab"
         }`}
       >

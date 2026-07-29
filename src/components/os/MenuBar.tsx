@@ -8,19 +8,29 @@ import type { Mode } from "./Gate";
 
 function Clock() {
   const [time, setTime] = useState("");
+
   useEffect(() => {
-    const tick = () =>
+    let timeout: ReturnType<typeof setTimeout>;
+
+    const tick = () => {
+      const now = new Date();
       setTime(
-        new Date().toLocaleTimeString("en-IN", {
+        now.toLocaleTimeString("en-IN", {
           hour: "2-digit",
           minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
           timeZone: "Asia/Kolkata",
         })
       );
+      // re-align to the next real second instead of drifting on a fixed interval
+      timeout = setTimeout(tick, 1000 - now.getMilliseconds());
+    };
+
     tick();
-    const id = setInterval(tick, 30_000);
-    return () => clearInterval(id);
+    return () => clearTimeout(timeout);
   }, []);
+
   return (
     <span className="hidden font-mono text-[11px] tabular-nums sm:inline">
       {time} IST
@@ -46,7 +56,7 @@ export function MenuBar({
       initial={{ y: -40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: "spring", stiffness: 240, damping: 26, delay: 0.2 }}
-      className="glass fixed inset-x-0 top-0 z-[60] flex h-11 items-center justify-between border-x-0 border-t-0 px-4 text-muted"
+      className="glass fixed inset-x-0 top-0 z-[60] flex h-11 select-none items-center justify-between border-x-0 border-t-0 px-4 text-muted"
     >
       <div className="flex items-center gap-4">
         <span className="font-mono text-[12px] font-semibold text-foreground">
