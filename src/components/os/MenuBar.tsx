@@ -38,11 +38,8 @@ function Clock() {
   );
 }
 
-/* site-level navigation — Blog and more pages slot in here later */
-const siteNav = [
-  { label: "Home", active: true, soon: false },
-  { label: "Blog", active: false, soon: true },
-];
+/* site-level navigation — Blog and other pages slot in here later */
+const siteNav = [{ label: "Home", active: true, soon: false }];
 
 export function MenuBar({
   mode,
