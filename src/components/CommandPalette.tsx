@@ -49,6 +49,8 @@ export function CommandPalette() {
       { group: "Open app", label: "Skills", hint: "package.json", icon: Cpu, action: () => goTo("skills") },
       { group: "Open app", label: "Contact", hint: "new-request.http", icon: Mail, action: () => goTo("contact") },
       { group: "Open app", label: "Terminal", hint: "zsh", icon: Cpu, action: () => goTo("terminal") },
+      { group: "Open app", label: "Blog", hint: "things i wrote", icon: FileDown, action: () => goTo("blog") },
+      { group: "Open app", label: "Visitor notes", hint: "leave a sticky note", icon: Home, action: () => goTo("notes") },
       ...projects
         .filter((project) => project.live)
         .map((project) => ({

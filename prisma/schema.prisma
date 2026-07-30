@@ -1,0 +1,52 @@
+// Prisma schema for shivrajput.com (ShivOS)
+// Datasource URL lives in prisma.config.ts (Prisma 7 convention).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Blog posts — markdown body, optional cover image.
+model BlogPost {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  excerpt   String?
+  imageUrl  String?
+  body      String // markdown
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, createdAt])
+}
+
+/// Anonymous sticky notes left by visitors.
+model VisitorNote {
+  id        String   @id @default(cuid())
+  author    String? // optional nickname
+  body      String
+  color     String   @default("butter")
+  hidden    Boolean  @default(false) // moderation flag
+  createdAt DateTime @default(now())
+
+  @@index([hidden, createdAt])
+}
+
+/// Knowledge base Dobby (the AI agent) answers from.
+/// One row per topic: key = "skills", content = the facts.
+model ContextEntry {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  label     String?
+  content   String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+}

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* class-based dark mode (toggled by next-themes) */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -135,6 +136,96 @@ body {
     var(--foreground) 9px 12px,
     transparent 12px 14px
   );
+}
+
+/* ── dobby (the little helper) ──────────────── */
+:root {
+  --dobby-skin: #f2e3cd;
+  --dobby-line: #4a3b2a;
+  --dobby-cloth: #cfe3d6;
+  --dobby-blush: #f2a08c;
+}
+.dark {
+  --dobby-skin: #e6d3b8;
+  --dobby-line: #3a2e21;
+  --dobby-cloth: #9fc4ae;
+  --dobby-blush: #e08b74;
+}
+
+/* ── sticky notes (visitor wall) ───────────── */
+.note-butter {
+  background: #fdf3c7;
+  color: #4a3f10;
+}
+.note-mint {
+  background: #d8f5e3;
+  color: #12402a;
+}
+.note-sky {
+  background: #d9ecfd;
+  color: #10334f;
+}
+.note-blush {
+  background: #fde0e4;
+  color: #4e1b25;
+}
+.note-lilac {
+  background: #e8e0fd;
+  color: #2f2352;
+}
+.dark .note-butter {
+  background: #4a4110;
+  color: #fdf3c7;
+}
+.dark .note-mint {
+  background: #12402a;
+  color: #d8f5e3;
+}
+.dark .note-sky {
+  background: #10334f;
+  color: #d9ecfd;
+}
+.dark .note-blush {
+  background: #4e1b25;
+  color: #fde0e4;
+}
+.dark .note-lilac {
+  background: #2f2352;
+  color: #e8e0fd;
+}
+
+/* ── markdown (blog reader) ────────────────── */
+.md-body {
+  --tw-prose-body: var(--muted);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-links: var(--accent);
+  --tw-prose-quotes: var(--muted);
+  --tw-prose-quote-borders: var(--line);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-hr: var(--line);
+  --tw-prose-counters: var(--faint);
+  --tw-prose-bullets: var(--faint);
+  --tw-prose-captions: var(--faint);
+  --tw-prose-th-borders: var(--line);
+  --tw-prose-td-borders: var(--line);
+  --tw-prose-pre-bg: var(--surface-2);
+  --tw-prose-pre-code: var(--foreground);
+}
+.md-body :where(code):not(:where(pre code)) {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-size: 0.875em;
+  font-weight: 400;
+}
+.md-body :where(code):not(:where(pre code))::before,
+.md-body :where(code):not(:where(pre code))::after {
+  content: "";
+}
+.md-body :where(pre) {
+  border: 1px solid var(--line);
 }
 
 @media (prefers-reduced-motion: reduce) {

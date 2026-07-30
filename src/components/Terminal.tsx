@@ -57,7 +57,10 @@ export function TerminalBody({ height = 300 }: { height?: number }) {
       case "help":
         print([
           { type: "output", text: "available commands:" },
-          { type: "accent", text: "  letter · work · experience · skills · contact" },
+          {
+            type: "accent",
+            text: "  letter · work · experience · skills · contact · blog · notes",
+          },
           { type: "output", text: "  whoami        who is this guy" },
           { type: "output", text: "  ls            list the projects" },
           { type: "output", text: "  open <name>   open a live project" },
@@ -88,7 +91,9 @@ export function TerminalBody({ height = 300 }: { height?: number }) {
       case "experience":
       case "exp":
       case "skills":
-      case "contact": {
+      case "contact":
+      case "blog":
+      case "notes": {
         const target =
           cmd === "exp" ? "experience" : cmd === "about" ? "letter" : cmd;
         openApp(target);

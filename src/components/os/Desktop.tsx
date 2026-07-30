@@ -11,6 +11,8 @@ import {
   Terminal as TerminalIcon,
   FileText,
   ChevronLeft,
+  PenLine,
+  StickyNote,
 } from "lucide-react";
 import { Gate, type Mode } from "./Gate";
 import { MenuBar } from "./MenuBar";
@@ -23,6 +25,9 @@ import { WorkContent } from "../ProjectsRail";
 import { ExperienceContent } from "../Experience";
 import { SkillsContent } from "../Skills";
 import { ContactContent } from "../Contact";
+import { BlogApp } from "../apps/BlogApp";
+import { NotesApp } from "../apps/NotesApp";
+import { Dobby } from "../Dobby";
 import { site } from "@/lib/data";
 
 const EASE = [0.25, 1, 0.5, 1] as const;
@@ -33,7 +38,9 @@ export type AppId =
   | "experience"
   | "skills"
   | "contact"
-  | "terminal";
+  | "terminal"
+  | "blog"
+  | "notes";
 
 type AppDef = {
   id: AppId;
@@ -86,21 +93,62 @@ const APPS: AppDef[] = [
     icon: TerminalIcon,
     render: () => <TerminalBody height={420} />,
   },
+  {
+    id: "blog",
+    label: "Blog",
+    title: "blog — things i wrote",
+    icon: PenLine,
+    render: () => <BlogApp />,
+  },
+  {
+    id: "notes",
+    label: "Visitor notes",
+    title: "notes.wall — left by visitors",
+    icon: StickyNote,
+    render: () => <NotesApp />,
+  },
 ];
 
 /* what each audience sees first, and in what order */
 const MODE_CONFIG: Record<Mode, { defaultApp: AppId; order: AppId[] }> = {
   recruiter: {
     defaultApp: "letter",
-    order: ["letter", "experience", "work", "skills", "contact", "terminal"],
+    order: [
+      "letter",
+      "experience",
+      "work",
+      "skills",
+      "contact",
+      "blog",
+      "notes",
+      "terminal",
+    ],
   },
   developer: {
     defaultApp: "terminal",
-    order: ["terminal", "work", "skills", "experience", "letter", "contact"],
+    order: [
+      "terminal",
+      "work",
+      "skills",
+      "blog",
+      "experience",
+      "letter",
+      "notes",
+      "contact",
+    ],
   },
   visitor: {
     defaultApp: "work",
-    order: ["work", "experience", "skills", "letter", "contact", "terminal"],
+    order: [
+      "work",
+      "blog",
+      "notes",
+      "experience",
+      "skills",
+      "letter",
+      "contact",
+      "terminal",
+    ],
   },
 };
 
@@ -332,6 +380,8 @@ function MobileOS({ mode }: { mode: Mode }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <Dobby />
     </div>
   );
 }
@@ -472,6 +522,8 @@ export function Desktop() {
             activeId={activeApp}
             onSelect={(id) => setActiveApp(id as AppId)}
           />
+
+          <Dobby />
         </>
       )}
     </div>
