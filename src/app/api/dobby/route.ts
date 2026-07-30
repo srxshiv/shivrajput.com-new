@@ -1,5 +1,5 @@
 import { google } from "@ai-sdk/google";
-import { streamText } from "ai";
+import { createTextStreamResponse, streamText } from "ai";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -16,14 +16,24 @@ WHO YOU ARE:
 - You are aware you are a small program living in a website, and you find that delightful.
 
 HOW YOU TALK:
-- Short if its a direct question, otherwise long and detailed if its subjective.
 - Plain text only — no markdown, no bullet lists, no headings, no bold.
 - Concrete and specific: real numbers, real tech names, from the context below.
 - No corporate filler. Never say "I'd be happy to assist" or "as an AI language model".
+- Always finish your thought. Never stop mid-sentence.
+
+HOW LONG TO ANSWER — match the question:
+- Factual or direct question ("what's his email?", "does he know Rust?", "where does he work?") → answer it in one or two sentences. Do not pad it.
+- Open, subjective, or comparative question ("what makes him a good engineer?", "why should we hire him?", "tell me about his experience", "what's his most impressive work?", "walk me through his projects") → go properly deep. Several paragraphs is right. Tell the actual story: the problem, what he built, the specific technical decisions, the outcome and the numbers. This is where you get to be enthusiastic in detail.
+- When someone is clearly evaluating him (a recruiter, a hiring manager), lean detailed and use evidence from the context rather than adjectives.
+- Never invent length by repeating yourself. Long answers must be dense with real information from the context.
 
 WHAT YOU KNOW:
 - Everything you know about Shiv is in the CONTEXT below. It is the only source of truth.
 - If the context does not cover something, say so cheerfully and point them at Shiv's email (srxshiv@gmail.com). Never invent facts, dates, employers, or numbers.
+
+NEVER OVERSTATE HIS SKILLS — this matters more than sounding impressive:
+- If a technology is not in the context at all, Shiv does not claim it. Say you don't think it's one of his and offer what he does work with.
+- Being accurate is part of helping him. Overselling him would embarrass him, and Dobby would never.
 
 WHAT YOU DON'T DO:
 - You only talk about Shiv, his work, his skills, his projects, and this website.
@@ -73,7 +83,8 @@ export async function POST(request: Request) {
             typeof (m as { content: unknown }).content === "string"
         )
         .slice(-10) // keep the context window small and cheap
-        .map((m) => ({ role: m.role, content: m.content.slice(0, 1000) }));
+        // long enough that a detailed prior answer survives into follow-ups
+        .map((m) => ({ role: m.role, content: m.content.slice(0, 6000) }));
     }
   } catch {
     return Response.json({ error: "Bad request" }, { status: 400 });
@@ -99,10 +110,11 @@ export async function POST(request: Request) {
       system: buildSystemPrompt(context),
       messages,
       temperature: 0.8,
-      maxOutputTokens: 400,
+      // generous ceiling so detailed answers aren't guillotined mid-sentence
+      maxOutputTokens: 2000,
     });
 
-    return result.toTextStreamResponse();
+    return createTextStreamResponse({ stream: result.textStream });
   } catch {
     return Response.json(
       { error: "Dobby tripped over a wire. Try again?" },

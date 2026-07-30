@@ -191,9 +191,11 @@ export function Dobby() {
   }, [open]);
 
   useEffect(() => {
+    // smooth scrolling fights itself when tokens arrive every few ms, which
+    // leaves the newest line stranded below the fold — jump instantly instead
     listRef.current?.scrollTo({
       top: listRef.current.scrollHeight,
-      behavior: "smooth",
+      behavior: streaming ? "auto" : "smooth",
     });
   }, [messages, streaming]);
 
@@ -202,7 +204,9 @@ export function Dobby() {
     if (!question || streaming) return;
 
     const history = [...messages, { role: "user" as const, content: question }];
-    setMessages(history);
+    // show the user's message AND an empty assistant bubble in the same paint,
+    // so the typing dots appear instantly instead of after the fetch resolves
+    setMessages([...history, { role: "assistant", content: "" }]);
     setInput("");
     setStreaming(true);
 
@@ -232,7 +236,6 @@ export function Dobby() {
         return;
       }
 
-      setMessages([...history, { role: "assistant", content: "" }]);
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let acc = "";
@@ -243,6 +246,9 @@ export function Dobby() {
         acc += decoder.decode(value, { stream: true });
         setMessages([...history, { role: "assistant", content: acc }]);
       }
+      // flush any trailing multi-byte character left in the decoder
+      acc += decoder.decode();
+      setMessages([...history, { role: "assistant", content: acc }]);
     } catch {
       setMessages([
         ...history,
@@ -300,7 +306,7 @@ export function Dobby() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.97 }}
             transition={{ type: "spring", stiffness: 300, damping: 26 }}
-            className="fixed bottom-24 right-3 z-[66] flex max-h-[min(560px,calc(100svh-140px))] w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-3xl border border-line bg-background shadow-[0_24px_70px_rgba(0,0,0,0.22)] sm:w-[370px] md:bottom-28 md:right-5"
+            className="fixed bottom-24 right-3 z-[66] flex max-h-[min(680px,calc(100svh-130px))] w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-3xl border border-line bg-background shadow-[0_24px_70px_rgba(0,0,0,0.22)] sm:w-[400px] md:bottom-28 md:right-5"
           >
             {/* header */}
             <div className="flex shrink-0 items-center gap-3 border-b border-line bg-surface px-4 py-3">
@@ -328,13 +334,15 @@ export function Dobby() {
                 {messages.map((msg, i) => (
                   <div
                     key={i}
-                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                    className={`flex min-w-0 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <motion.div
-                      initial={{ opacity: 0, y: 8, scale: 0.98 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, ease: EASE }}
-                      className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed ${
+                      // wrap-anywhere keeps long URLs from overflowing the
+                      // bubble and getting clipped by the scroll container
+                      className={`max-w-[85%] min-w-0 whitespace-pre-wrap break-words [overflow-wrap:anywhere] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed ${
                         msg.role === "user"
                           ? "rounded-br-sm bg-foreground text-background"
                           : "rounded-bl-sm border border-line bg-surface text-muted"
