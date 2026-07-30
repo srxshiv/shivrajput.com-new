@@ -6,7 +6,7 @@ export const site = {
   location: "India",
   headline: "I build production systems end to end.",
   intro:
-    "Full-stack engineer working across the whole surface of a product — schema design, API architecture, cloud infrastructure, and interfaces that feel considered. Currently engineering healthcare software at Medikzo.",
+    "Full-stack engineer working across the whole surface of a product — system design, API architecture, cloud infrastructure, and interfaces that feel considered. Currently engineering healthcare software at Medikzo.",
   resume:
     "https://drive.google.com/file/d/1npWtPejEb8ZEzngtwm40Cd4UToSDgE7o/view?usp=share_link",
 };
@@ -14,22 +14,27 @@ export const site = {
 /* the cover letter — greeting adapts to who's reading */
 export const letter = {
   greetings: {
-    recruiter: "Dear recruiter,",
+    recruiter: "Dear Recruiter,",
     developer: "Hey, fellow builder —",
     visitor: "Hi there,",
   },
   paragraphs: [
-    "I'm Shiv — a computer science enthusiast doing full-stack development right now. \"Enthusiast\" is the operative word: I got into this because systems are fascinating, and I stayed because shipping them is even better.",
-    "Right now that looks like leading development at Medikzo — a healthcare platform where I own everything from PostgreSQL row locks and an SQS-based assignment engine to three React frontends, all typed end to end with a shared Zod schema. I cut our compute bill by 60% because leaving easy wins on the table bothers me.",
-    "On the side I ship whatever teaches me something new: a developer-footprint aggregator, an AI voice interviewer, a Rust-backed desktop dictation app. Different stacks on purpose — breadth compounds.",
-    "I'm looking for hard problems and teams that care about the craft. If that's you, my inbox is genuinely open.",
+    "I am Shiv, a computer science enthusiast and full stack developer. I work across the entire surface of a product- relational data modelling, API architecture, cloud infrastructure, and interfaces that are actually enjoyable to use(like this one :) ). My journey into software engineering started because I find complex systems endlessly fascinating: concurrency guarantees, message queues, the failure modes that only surface under real load. But I stayed because the thrill of actually shipping them to real users is unmatched.",
+    "Currently, I lead development at Medikzo, a healthcare platform with over 1,000 downloads. I oversee the entire architecture, orchestrating a robust NestJS API on PostgreSQL. I optimized our React frontends by bypassing the standard administrative doctor summary and instead populating information directly from raw properties on the frontend for immediate rendering. I unified this entire stack with a shared Zod schema to guarantee end to end type safety.",
+    "Beyond the code, I manage our AWS infrastructure as code via CloudFormation. I implemented automated CI/CD pipelines using GitHub Actions with OIDC, successfully deploying our Dockerized API on an ECS Fargate cluster behind an ALB. By migrating asynchronous workloads to serverless AWS Lambda functions and leveraging Fargate Spot instances, I cut our compute bill by 60 percent. Leaving easy wins on the table simply bothers me.",
+    "On the side, I build whatever challenges me to learn something completely new. Recently, I independently launched DevsOwl, a developer footprint aggregator, and Heyllo.ai, a real time AI voice interview platform. I intentionally choose different tech stacks for my projects — spanning Next.js, Rust, and Vapi — because I believe technical breadth compounds your overall engineering intuition.",
+    "While I am incredibly confident in my ability to build and scale robust applications, I am always aware of how much there is left to explore. If I encounter a framework, cloud service, or language I do not know, I have absolute certainty that I can dive in and master it quickly. I am deeply hungry to grow and ready to adapt to whatever the codebase requires.",
+    "I am looking for hard problems and an engineering team that deeply cares about the craft. If that sounds like your culture, my inbox is genuinely open.",
   ],
+  signoff: "Best regards,",
+  signature: "Shiv Rajput",
   checklist: [
     "ships production systems, not demos",
     "owns infra — AWS, IaC, CI/CD",
     "types everything, end to end",
     "learns fast (Rust, most recently)",
     "actually replies to email",
+    "A very kind and generous person"
   ],
 };
 

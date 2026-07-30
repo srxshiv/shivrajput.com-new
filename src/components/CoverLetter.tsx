@@ -70,13 +70,18 @@ export function CoverLetter({ mode }: { mode: Mode }) {
         </ul>
       </motion.div>
 
-      <motion.div variants={fadeUp} className="flex items-center gap-4">
-        <span className="handwritten rotate-[-3deg] text-2xl text-foreground">
-          — Shiv
+      <motion.div variants={fadeUp} className="flex flex-col gap-1">
+        <span className="text-[14.5px] font-light text-muted">
+          {letter.signoff}
         </span>
-        <span className="handwritten text-sm text-faint">
-          (yes, i wrote this. the site just renders it)
-        </span>
+        <div className="flex items-end gap-4">
+          <span className="handwritten rotate-[-3deg] text-2xl text-foreground">
+            {letter.signature}
+          </span>
+          <span className="handwritten pb-1 text-sm text-faint">
+            (yes, i wrote this. the site just renders it)
+          </span>
+        </div>
       </motion.div>
 
       <motion.div variants={fadeUp} className="mt-1 flex items-center gap-3">

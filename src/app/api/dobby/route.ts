@@ -6,6 +6,27 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
 const MODEL = process.env.DOBBY_MODEL || "gemini-3.6-flash";
+/**
+ * Free-tier quotas are per-model, so when the primary model's daily allowance
+ * runs out we can still answer on another one. The flagship flash models have
+ * small free allowances (gemini-3.6-flash is 20 requests/day), while the lite
+ * tier is far more generous — so that's the safety net. "-latest" is an alias,
+ * which means it won't be retired out from under us like a pinned version can.
+ */
+const FALLBACK_MODEL =
+  process.env.DOBBY_FALLBACK_MODEL || "gemini-flash-lite-latest";
+
+function isQuotaError(error: unknown) {
+  const text = String(
+    (error as { message?: string })?.message ?? error ?? ""
+  ).toLowerCase();
+  return (
+    text.includes("quota") ||
+    text.includes("resource_exhausted") ||
+    text.includes("rate limit") ||
+    text.includes("429")
+  );
+}
 
 const PERSONA = `You are Dobby — a small, extremely enthusiastic creature who lives inside Shiv Rajput's portfolio website and helps visitors learn about him.
 
@@ -104,21 +125,90 @@ export async function POST(request: Request) {
     // database hiccup — Dobby still answers, just without facts
   }
 
-  try {
-    const result = streamText({
-      model: google(MODEL),
-      system: buildSystemPrompt(context),
+  const system = buildSystemPrompt(context);
+
+  /**
+   * streamText deliberately swallows provider errors so a bad response can't
+   * crash the server: the iterator just ends early and `onError` fires. That
+   * means a failure looks like HTTP 200 with an empty body — a blank bubble in
+   * the UI. So we capture the error out of `onError`, and if nothing streamed
+   * we retry on the fallback model or say something in character.
+   */
+  const pumpInto = async (
+    controller: ReadableStreamDefaultController<string>,
+    model: string
+  ) => {
+    let failure: unknown = null;
+    let produced = false;
+
+    const { textStream } = streamText({
+      model: google(model),
+      system,
       messages,
       temperature: 0.8,
       // generous ceiling so detailed answers aren't guillotined mid-sentence
       maxOutputTokens: 2000,
+      onError: ({ error }) => {
+        failure = error;
+      },
     });
 
-    return createTextStreamResponse({ stream: result.textStream });
-  } catch {
-    return Response.json(
-      { error: "Dobby tripped over a wire. Try again?" },
-      { status: 500 }
-    );
-  }
+    try {
+      for await (const chunk of textStream) {
+        produced = true;
+        controller.enqueue(chunk);
+      }
+    } catch (thrown) {
+      failure = failure ?? thrown;
+    }
+
+    return { failure, produced };
+  };
+
+  const stream = new ReadableStream<string>({
+    async start(controller) {
+      try {
+        const primary = await pumpInto(controller, MODEL);
+        if (!primary.failure) return;
+
+        console.error(`[dobby] ${MODEL} failed:`, primary.failure);
+
+        // mid-answer failure: we can't restart, so close the thought gracefully
+        if (primary.produced) {
+          controller.enqueue(
+            "\n\n" +
+              (isQuotaError(primary.failure)
+                ? "…and that is exactly where Dobby runs out of his daily allowance! Come back tomorrow, or email Shiv at srxshiv@gmail.com."
+                : "…and then Dobby lost his train of thought! Sorry. Ask him again?")
+          );
+          return;
+        }
+
+        // nothing sent yet — a different model has its own free-tier quota
+        if (MODEL !== FALLBACK_MODEL) {
+          const fallback = await pumpInto(controller, FALLBACK_MODEL);
+          if (!fallback.failure) return;
+          console.error(`[dobby] ${FALLBACK_MODEL} failed:`, fallback.failure);
+          if (fallback.produced) return;
+
+          controller.enqueue(
+            isQuotaError(fallback.failure) || isQuotaError(primary.failure)
+              ? "Oh no — Dobby has answered so many questions today that he used up his entire daily allowance! Please come back tomorrow, or email Shiv directly at srxshiv@gmail.com. He always replies."
+              : "Dobby tripped over a wire and cannot reach his brain right now. Try again in a moment, or email Shiv at srxshiv@gmail.com."
+          );
+          return;
+        }
+
+        controller.enqueue(
+          isQuotaError(primary.failure)
+            ? "Oh no — Dobby has used up his whole daily allowance of answers! Please come back tomorrow, or email Shiv directly at srxshiv@gmail.com."
+            : "Dobby tripped over a wire and cannot reach his brain right now. Try again in a moment?"
+        );
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return createTextStreamResponse({ stream });
 }
