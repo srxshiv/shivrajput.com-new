@@ -121,8 +121,12 @@ export function NotesApp() {
     <div className="flex h-full flex-col">
       {/* composer */}
       <div className="shrink-0 border-b border-line bg-surface p-5">
-        <div className="flex flex-col gap-3 md:flex-row md:items-start">
-          <div className={`note-${color} w-full rounded-[3px] p-3 shadow-[0_4px_14px_rgba(0,0,0,0.1)] md:max-w-sm`}>
+        {/* the sticky and its controls are the same height, so the controls
+            column never leaves a bare strip of card beside the note */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-stretch">
+          <div
+            className={`note-${color} flex w-full flex-col rounded-[3px] p-3 shadow-[0_4px_14px_rgba(0,0,0,0.1)] md:w-80 md:shrink-0`}
+          >
             <textarea
               ref={textareaRef}
               value={body}
@@ -133,7 +137,7 @@ export function NotesApp() {
               rows={3}
               placeholder="leave a note for shiv…"
               aria-label="Your note"
-              className="w-full resize-none bg-transparent text-[13.5px] leading-relaxed outline-none placeholder:opacity-50"
+              className="w-full flex-1 resize-none bg-transparent text-[13.5px] leading-relaxed outline-none placeholder:opacity-50"
             />
             <div className="flex items-center justify-between gap-2 pt-1">
               <input
@@ -149,7 +153,16 @@ export function NotesApp() {
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col gap-3">
+          <div className="flex flex-1 flex-col justify-between gap-3 md:max-w-md">
+            {/* the trust notice leads; controls sit on the bottom baseline,
+                level with the foot of the sticky note */}
+            <p className="text-[12px] font-light leading-relaxed text-muted">
+              <span className="text-foreground">This works on trust.</span>{" "}
+              Anyone can post here anonymously, so please don&apos;t write
+              anything hateful, NSFW, or unkind. Be the reason someone smiles
+              today.
+            </p>
+
             <div className="flex items-center gap-2">
               {COLORS.map((c) => (
                 <button
@@ -180,14 +193,6 @@ export function NotesApp() {
                 Pin it
               </motion.button>
             </div>
-
-            {/* the trust notice */}
-            <p className="max-w-md text-[12px] font-light leading-relaxed text-muted">
-              <span className="text-foreground">This works on trust.</span>{" "}
-              Anyone can post here anonymously, so please don&apos;t write
-              anything hateful, NSFW, or unkind. Be the reason someone smiles
-              today.
-            </p>
 
             <AnimatePresence>
               {error && (
