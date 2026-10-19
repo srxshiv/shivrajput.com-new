@@ -48,10 +48,7 @@ function DockIcon({
   );
 
   return (
-    <div className="group relative flex flex-col items-center">
-      <span className="glass pointer-events-none absolute -top-9 whitespace-nowrap rounded-md px-2.5 py-1 font-mono text-[11px] text-muted opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-        {label}
-      </span>
+    <div className="relative flex flex-col items-center">
       <motion.button
         ref={ref}
         onClick={onClick}
@@ -67,13 +64,15 @@ function DockIcon({
       >
         <motion.span style={{ scale: iconScale }}>{children}</motion.span>
       </motion.button>
-      {/* active dot */}
+      {/* always-on name — nobody should have to hover to find Experience */}
       <span
-        className={`mt-1 h-1 w-1 rounded-full bg-foreground transition-opacity duration-300 ${
-          active ? "opacity-100" : "opacity-0"
+        className={`mt-1.5 whitespace-nowrap text-[10px] font-medium leading-none transition-colors duration-300 ${
+          active ? "text-foreground" : "text-faint"
         }`}
         aria-hidden
-      />
+      >
+        {label}
+      </span>
     </div>
   );
 }
@@ -100,7 +99,7 @@ export function Dock({
       <div
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
-        className="glass flex items-end gap-2 rounded-3xl px-3 pb-1.5 pt-2 shadow-[0_16px_48px_rgba(0,0,0,0.14)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.5)]"
+        className="glass flex items-end gap-2.5 rounded-3xl px-3 pb-2 pt-2 shadow-[0_16px_48px_rgba(0,0,0,0.14)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.5)]"
       >
         {apps.map((app) => (
           <DockIcon
@@ -114,7 +113,7 @@ export function Dock({
           </DockIcon>
         ))}
 
-        <span className="mx-1 mb-3 h-8 w-px self-end bg-line" aria-hidden />
+        <span className="mx-1 mb-5 h-8 w-px self-end bg-line" aria-hidden />
 
         {/* resume — the only external one */}
         <DockIcon

@@ -43,14 +43,19 @@ export function CommandPalette() {
 
   const items = useMemo<Item[]>(
     () => [
-      { group: "Open app", label: "Cover letter", hint: "README.for-you.md", icon: Home, action: () => goTo("letter") },
       { group: "Open app", label: "Work", hint: "5 case files", icon: FolderGit2, action: () => goTo("work") },
-      { group: "Open app", label: "Experience", hint: "medikzo — git log", icon: Briefcase, action: () => goTo("experience") },
-      { group: "Open app", label: "Skills", hint: "package.json", icon: Cpu, action: () => goTo("skills") },
-      { group: "Open app", label: "Contact", hint: "new-request.http", icon: Mail, action: () => goTo("contact") },
+      { group: "Open app", label: "Experience", hint: "full-stack engineer @ MedikZo", icon: Briefcase, action: () => goTo("experience") },
+      { group: "Open app", label: "Cover letter", hint: "README.for-you.md", icon: Home, action: () => goTo("letter") },
+      { group: "Open app", label: "Skills", hint: "skills.json", icon: Cpu, action: () => goTo("skills") },
       { group: "Open app", label: "Terminal", hint: "zsh", icon: Cpu, action: () => goTo("terminal") },
-      { group: "Open app", label: "Blog", hint: "things i wrote", icon: FileDown, action: () => goTo("blog") },
+      { group: "Open app", label: "Contact", hint: "new-request.http", icon: Mail, action: () => goTo("contact") },
       { group: "Open app", label: "Visitor notes", hint: "leave a sticky note", icon: Home, action: () => goTo("notes") },
+      { group: "Open app", label: "Blog", hint: "things i wrote", icon: FileDown, action: () => goTo("blog") },
+      { group: "Open app", label: "Videos", hint: "occasionally on camera", icon: ArrowUpRight, action: () => goTo("videos") },
+      { group: "Life side", label: "Story", hint: "hello, human", icon: Home, action: () => goTo("story") },
+      { group: "Life side", label: "Memory board", hint: "draggable polaroids", icon: Home, action: () => goTo("memories") },
+      { group: "Life side", label: "The anti-resume", hint: "wins & faceplants", icon: Home, action: () => goTo("lifeline") },
+      { group: "Life side", label: "Skill tree", hint: "chaotic good build", icon: Home, action: () => goTo("hobbies") },
       ...projects
         .filter((project) => project.live)
         .map((project) => ({

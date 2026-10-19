@@ -36,6 +36,35 @@
   --glow: rgba(34, 102, 255, 0.28);
 }
 
+/* ── human mode — warm, wholesome, zero KPIs ── */
+.human {
+  --background: #f9f4ea;
+  --surface: #f2eadb;
+  --surface-2: #eadfc9;
+  --foreground: #40332a;
+  --muted: #79685a;
+  --faint: #a3907c;
+  --line: #e3d5bf;
+  --panel: #f2eadb;
+  --panel-hover: #eadfc9;
+  --accent: #d9704a;
+  --glow: rgba(217, 112, 74, 0.22);
+}
+
+.dark.human {
+  --background: #211a13;
+  --surface: #2a2119;
+  --surface-2: #332920;
+  --foreground: #f3e8d8;
+  --muted: #c4b09b;
+  --faint: #8d7a66;
+  --line: #3c3125;
+  --panel: #2a2119;
+  --panel-hover: #332920;
+  --accent: #e8926b;
+  --glow: rgba(232, 146, 107, 0.25);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
@@ -136,6 +165,16 @@ body {
     var(--foreground) 9px 12px,
     transparent 12px 14px
   );
+}
+
+/* ── polaroid frames (memory board) ─────────── */
+.polaroid {
+  background: #fffdf7;
+  box-shadow: 0 6px 22px rgba(60, 40, 20, 0.18);
+}
+.dark .polaroid {
+  background: #efe6d6;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5);
 }
 
 /* ── dobby (the little helper) ──────────────── */

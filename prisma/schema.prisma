@@ -50,3 +50,78 @@ model ContextEntry {
 
   @@index([order])
 }
+
+/// Portfolio projects — each one tells its own story as a timeline.
+/// `stack` is a JSON string[] and `story` a JSON array of
+/// { kind, title, body } items rendered as the case-file timeline.
+model Project {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  year      String
+  summary   String
+  detail    String
+  image     String?
+  live      String?
+  github    String?
+  stack     Json     @default("[]")
+  story     Json     @default("[]")
+  /// "advanced" | "intermediate" | "beginner" — which rail the card sits in.
+  level     String   @default("intermediate")
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, order])
+}
+
+/// Metric/skill tiles for the "by the numbers" app.
+/// kind = "number" (229+ endpoints…) or "tech" (TypeScript…).
+model Metric {
+  id        String   @id @default(cuid())
+  kind      String   @default("number")
+  value     String
+  label     String?
+  note      String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([kind, order])
+}
+
+/// Future YouTube videos.
+model Video {
+  id          String    @id @default(cuid())
+  title       String
+  url         String
+  note        String?
+  publishedAt DateTime?
+  order       Int       @default(0)
+  published   Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  @@index([published, order])
+}
+
+/// Key/value site configuration (dock visibility, github accounts, status
+/// line…). Values are JSON strings.
+model SiteSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+/// Polaroids on the human-mode memory board. Image optional — caption-only
+/// cards render as handwritten notes in a polaroid frame.
+model Memory {
+  id        String   @id @default(cuid())
+  imageUrl  String?
+  caption   String
+  rotation  Float    @default(0)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([order])
+}

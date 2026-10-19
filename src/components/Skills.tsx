@@ -1,85 +1,196 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { site } from "@/lib/data";
 
 const EASE = [0.25, 1, 0.5, 1] as const;
 
-type Dep = { name: string; version: string; note?: string };
-type Group = { key: string; deps: Dep[] };
+type Skill = { name: string; value: string; note?: string };
+type Group = { key: string; skills: Skill[] };
 
-/* skills as dependencies — versions tell the story */
+/* top-level fields — who, where, what */
+const meta: [string, string][] = [
+  ["name", "shiv-rajput"],
+  ["role", "full-stack engineer"],
+  ["based_in", `${site.location.toLowerCase()} · ${site.workMode.toLowerCase()}`],
+  ["currently", "medikzo · jan 2026 → present"],
+];
+
+/* skills as config — the comments are the receipts */
 const groups: Group[] = [
   {
     key: "languages",
-    deps: [
-      { name: "typescript", version: "^daily-driver", note: "everything I ship is typed" },
-      { name: "javascript", version: "^fluent" },
-      { name: "rust", version: "~learning-fast", note: "built Wispr Flow's native layer with it" },
-      { name: "sql", version: "^production", note: "SKIP LOCKED is a personality trait" },
-      { name: "python", version: "^comfortable" },
+    skills: [
+      { name: "typescript", value: "daily driver", note: "everything I ship is typed, end to end" },
+      { name: "javascript", value: "fluent" },
+      { name: "sql", value: "production", note: "locks, indexes, raw-SQL analytics" },
+      { name: "python", value: "comfortable" },
+      { name: "c/c++", value: "comfortable" },
+      { name: "rust", value: "learning fast", note: "built Wispr Flow's native layer with it" },
+      { name: "bash", value: "scripting" },
     ],
   },
   {
-    key: "frameworks",
-    deps: [
-      { name: "next.js", version: "^15.0.0", note: "SSR, server actions, the works" },
-      { name: "react", version: "^19.0.0" },
-      { name: "nestjs", version: "^229-endpoints", note: "the Medikzo API runs on it" },
-      { name: "node.js", version: "^lts" },
-      { name: "tauri", version: "^desktop", note: "React front, Rust back" },
-      { name: "tailwindcss", version: "^this-site" },
+    key: "frontend",
+    skills: [
+      { name: "react", value: "19", note: "four role-locked consoles at MedikZo" },
+      { name: "next.js", value: "15", note: "SSR + caching — DevsOwl, Heyllo.ai, this site" },
+      { name: "tanstack-query", value: "production", note: "optimistic mutations with rollback" },
+      { name: "tailwind-css", value: "daily" },
+      { name: "ant-design", value: "production" },
+      { name: "dnd-kit", value: "drag & drop", note: "catalog ordering for 726 doctors" },
+      { name: "svg-charts", value: "hand-rolled", note: "the agent scorecard, no chart lib" },
+      { name: "vite", value: "build" },
+    ],
+  },
+  {
+    key: "backend",
+    skills: [
+      { name: "node.js", value: "lts" },
+      { name: "nestjs", value: "540+ endpoints", note: "the MedikZo API runs on it" },
+      { name: "express", value: "comfortable" },
+      { name: "graphql", value: "fan-out", note: "parallel queries for DevsOwl" },
+      { name: "typeorm", value: "120+ entities" },
+      { name: "prisma", value: "typed", note: "this site's backend" },
+      { name: "zod", value: "one contract", note: "shared by the API, 4 consoles, 12 Lambdas" },
+      { name: "casl", value: "5 roles", note: "role-based access, city-scoped data" },
+      { name: "webhooks", value: "160K+ events", note: "idempotent telephony ingestion" },
+      { name: "auth", value: "otp + jwt", note: "layered rate limits under advisory locks" },
+    ],
+  },
+  {
+    key: "databases",
+    skills: [
+      { name: "postgresql", value: "row + advisory locks", note: "240+ migrations, 180+ indexes" },
+      { name: "typesense", value: "self-hosted", note: "migrated off Algolia" },
+      { name: "firebase", value: "auth + firestore" },
+      { name: "mongodb", value: "comfortable" },
     ],
   },
   {
     key: "cloud",
-    deps: [
-      { name: "aws-fargate", version: "^spot-instances", note: "60% cheaper than before I touched it" },
-      { name: "aws-lambda", version: "^serverless" },
-      { name: "sqs-fifo", version: "^exactly-once", note: "SLA routing under 30 min" },
-      { name: "docker", version: "^everywhere" },
-      { name: "github-actions", version: "^oidc", note: "no long-lived AWS keys" },
+    skills: [
+      { name: "aws-lambda", value: "12 workers", note: "the call-center assignment engine" },
+      { name: "aws-ecs-fargate", value: "spot · 3 AZs", note: "behind an ALB, circuit-breaker rollback" },
+      { name: "aws-s3-cloudfront", value: "4 web apps", note: "+ 24K call recordings, private" },
+      { name: "aws-sqs-eventbridge", value: "queues + schedules", note: "dead-letter queues on the workers" },
+      { name: "aws-iam", value: "least privilege", note: "GitHub OIDC — no long-lived keys" },
+      { name: "digitalocean", value: "production", note: "moved here with zero data loss" },
     ],
   },
   {
-    key: "data",
-    deps: [
-      { name: "postgresql", version: "^row-locks", note: "35+ entities at Medikzo" },
-      { name: "prisma", version: "^typed" },
-      { name: "typeorm", version: "^production" },
-      { name: "graphql", version: "^fan-out", note: "parallel queries for DevsOwl" },
-      { name: "mongodb", version: "^flexible" },
-      { name: "firebase", version: "^auth+firestore" },
+    key: "devops",
+    skills: [
+      { name: "docker", value: "compose in prod" },
+      { name: "cloudformation", value: "24 templates", note: "every AWS resource as code" },
+      { name: "github-actions", value: "17 workflows", note: "OIDC, health-gated deploys" },
+      { name: "caddy", value: "reverse proxy + tls" },
+      { name: "vector", value: "structured logs", note: "correlation IDs end to end" },
+      { name: "vercel", value: "side projects" },
+      { name: "linux", value: "daily" },
+    ],
+  },
+  {
+    key: "testing",
+    skills: [
+      { name: "jest", value: "3,900+ tests", note: "unit + database-backed integration" },
+      { name: "supertest", value: "api" },
+      { name: "vitest", value: "frontend" },
+      { name: "testing-library", value: "react" },
+    ],
+  },
+  {
+    key: "tools",
+    skills: [
+      { name: "git", value: "daily" },
+      { name: "n8n", value: "workflow automation" },
     ],
   },
 ];
 
-const totalLines =
-  2 + groups.reduce((n, g) => n + g.deps.length + 2, 0) + 4;
+type Row = { key: string; hover?: boolean; node: React.ReactNode };
+
+const str = (text: string) => (
+  <span className="text-emerald-600 dark:text-emerald-400">&quot;{text}&quot;</span>
+);
+const open = (key: string) => (
+  <span className="pl-4">
+    <span className="text-accent">&quot;{key}&quot;</span>
+    <span className="text-muted">: {"{"}</span>
+  </span>
+);
+const close = (text: string) => <span className="pl-4 text-muted">{text}</span>;
+
+/* the file, line by line — static, so it's built once and numbered by index */
+const rows: Row[] = [
+  { key: "open", node: <span className="text-muted">{"{"}</span> },
+  ...meta.map(([key, value]) => ({
+    key: `meta-${key}`,
+    node: (
+      <span className="pl-4">
+        <span className="text-accent">&quot;{key}&quot;</span>
+        <span className="text-muted">: </span>
+        {str(value)}
+        <span className="text-muted">,</span>
+      </span>
+    ),
+  })),
+  ...groups.flatMap((group) => [
+    { key: `${group.key}-open`, node: open(group.key) },
+    ...group.skills.map((skill) => ({
+      key: `${group.key}-${skill.name}`,
+      hover: true,
+      node: (
+        <>
+          {/* fixed code column so every comment starts at the same place */}
+          <span className="shrink-0 whitespace-nowrap pl-8 @3xl:min-w-[48ch]">
+            <span className="text-foreground/80">&quot;{skill.name}&quot;</span>
+            <span className="text-muted">: </span>
+            {str(skill.value)}
+            <span className="text-muted">,</span>
+          </span>
+          {skill.note && (
+            <span className="hidden whitespace-nowrap pl-4 text-faint @3xl:inline">
+              {"// "}
+              {skill.note}
+            </span>
+          )}
+        </>
+      ),
+    })),
+    { key: `${group.key}-close`, node: close("},") },
+  ]),
+  { key: "contact-open", node: open("contact") },
+  {
+    key: "contact-hire",
+    hover: true,
+    node: (
+      <span className="pl-8">
+        <span className="text-foreground/80">&quot;hire&quot;</span>
+        <span className="text-muted">: </span>
+        <a
+          href={`mailto:${site.email}`}
+          className="text-emerald-600 underline decoration-dotted underline-offset-4 transition-colors hover:text-accent dark:text-emerald-400"
+        >
+          &quot;mailto:{site.email}&quot;
+        </a>
+      </span>
+    ),
+  },
+  { key: "contact-close", node: close("}") },
+  { key: "close", node: <span className="text-muted">{"}"}</span> },
+];
 
 export function SkillsContent() {
-  const [hovered, setHovered] = useState<string | null>(null);
-  let line = 0;
-  const nextLine = () => {
-    line += 1;
-    return line;
-  };
-
-  const LineNo = ({ n }: { n: number }) => (
-    <span className="w-8 shrink-0 select-none pr-4 text-right text-faint/60">
-      {n}
-    </span>
-  );
-
   return (
-    <div>
+    <div className="@container">
       {/* file meta strip */}
       <div className="flex items-center justify-between border-b border-line bg-surface px-5 py-2">
         <p className="handwritten rotate-[-1deg] text-base">
-          hover the deps for footnotes
+          the comments are the receipts
         </p>
         <span className="font-mono text-[10px] text-faint/60">
-          {totalLines} lines · utf-8 · json
+          {rows.length} lines · utf-8 · json
         </span>
       </div>
 
@@ -90,105 +201,21 @@ export function SkillsContent() {
         transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
         className="no-scrollbar overflow-x-auto p-5 font-mono text-[12.5px] leading-[1.9]"
       >
-          <div className="flex">
-            <LineNo n={nextLine()} />
-            <span className="text-muted">{"{"}</span>
-          </div>
-          <div className="flex">
-            <LineNo n={nextLine()} />
-            <span className="pl-4">
-              <span className="text-accent">&quot;name&quot;</span>
-              <span className="text-muted">: </span>
-              <span className="text-emerald-600 dark:text-emerald-400">
-                &quot;shiv-rajput&quot;
-              </span>
-              <span className="text-muted">,</span>
+        {rows.map((row, i) => (
+          <div
+            key={row.key}
+            className={`flex ${
+              row.hover
+                ? "rounded transition-colors duration-200 hover:bg-panel-hover"
+                : ""
+            }`}
+          >
+            <span className="w-8 shrink-0 select-none pr-4 text-right text-faint/60">
+              {i + 1}
             </span>
+            {row.node}
           </div>
-
-          {groups.map((group, gi) => (
-            <div key={group.key}>
-              <div className="flex">
-                <LineNo n={nextLine()} />
-                <span className="pl-4">
-                  <span className="text-accent">&quot;{group.key}&quot;</span>
-                  <span className="text-muted">: {"{"}</span>
-                </span>
-              </div>
-              {group.deps.map((dep) => {
-                const id = `${group.key}-${dep.name}`;
-                return (
-                  <div
-                    key={id}
-                    className="relative flex rounded transition-colors duration-200 hover:bg-panel-hover"
-                    onMouseEnter={() => setHovered(id)}
-                    onMouseLeave={() => setHovered(null)}
-                  >
-                    <LineNo n={nextLine()} />
-                    <span className="pl-8">
-                      <span className="text-foreground/80">
-                        &quot;{dep.name}&quot;
-                      </span>
-                      <span className="text-muted">: </span>
-                      <span className="text-emerald-600 dark:text-emerald-400">
-                        &quot;{dep.version}&quot;
-                      </span>
-                      <span className="text-muted">,</span>
-                    </span>
-                    <AnimatePresence>
-                      {dep.note && hovered === id && (
-                        <motion.span
-                          initial={{ opacity: 0, x: -6, rotate: 0 }}
-                          animate={{ opacity: 1, x: 0, rotate: -1.5 }}
-                          exit={{ opacity: 0, x: -4 }}
-                          transition={{ duration: 0.25, ease: EASE }}
-                          className="handwritten pointer-events-none absolute right-2 top-1/2 hidden -translate-y-1/2 whitespace-nowrap text-base text-muted lg:block"
-                        >
-                          ← {dep.note}
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                );
-              })}
-              <div className="flex">
-                <LineNo n={nextLine()} />
-                <span className="pl-4 text-muted">
-                  {"}"}
-                  {gi < groups.length - 1 ? "," : ","}
-                </span>
-              </div>
-            </div>
-          ))}
-
-          <div className="flex">
-            <LineNo n={nextLine()} />
-            <span className="pl-4">
-              <span className="text-accent">&quot;scripts&quot;</span>
-              <span className="text-muted">: {"{"}</span>
-            </span>
-          </div>
-          <div className="flex rounded transition-colors duration-200 hover:bg-panel-hover">
-            <LineNo n={nextLine()} />
-            <span className="pl-8">
-              <span className="text-foreground/80">&quot;hire&quot;</span>
-              <span className="text-muted">: </span>
-              <a
-                href="mailto:srxshiv@gmail.com"
-                className="text-emerald-600 underline decoration-dotted underline-offset-4 transition-colors hover:text-accent dark:text-emerald-400"
-              >
-                &quot;mailto:srxshiv@gmail.com&quot;
-              </a>
-            </span>
-          </div>
-          <div className="flex">
-            <LineNo n={nextLine()} />
-            <span className="pl-4 text-muted">{"}"}</span>
-          </div>
-          <div className="flex">
-            <LineNo n={nextLine()} />
-            <span className="text-muted">{"}"}</span>
-          </div>
+        ))}
       </motion.div>
     </div>
   );

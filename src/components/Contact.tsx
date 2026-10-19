@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Copy, Check, Send } from "lucide-react";
+import { ArrowUpRight, Copy, Check, Send, MapPin } from "lucide-react";
 import { site, socials } from "@/lib/data";
 
 const EASE = [0.25, 1, 0.5, 1] as const;
@@ -42,6 +42,10 @@ export function ContactContent() {
         <p className="mt-3 max-w-md text-sm font-light leading-relaxed text-muted">
           Interesting problem? Good team? Weird idea? Email is fastest — or
           press <span className="kbd">⌘K</span> from anywhere.
+        </p>
+        <p className="mt-2 flex items-center gap-1.5 font-mono text-[11.5px] text-faint">
+          <MapPin className="h-3.5 w-3.5" strokeWidth={1.5} />
+          {site.location} · {site.workMode.toLowerCase()} · {site.timezone}
         </p>
 
         <div className="mt-5 flex items-center gap-3">

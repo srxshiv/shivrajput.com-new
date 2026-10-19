@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   FileHeart,
   FolderGit2,
-  GitCommitHorizontal,
+  Briefcase,
   Braces,
   Mail,
   Terminal as TerminalIcon,
@@ -13,12 +13,17 @@ import {
   ChevronLeft,
   PenLine,
   StickyNote,
+  Clapperboard,
+  BookHeart,
+  Camera,
+  Route,
+  Trees,
 } from "lucide-react";
-import { Gate, type Mode } from "./Gate";
-import { MenuBar } from "./MenuBar";
+import { MenuBar, type Side } from "./MenuBar";
 import { Dock, type DockApp } from "./Dock";
 import { ProfileRail } from "./ProfileRail";
 import { DotGrid } from "../DotGrid";
+import { VibeLayer } from "./Vibe";
 import { TerminalBody } from "../Terminal";
 import { CoverLetter } from "../CoverLetter";
 import { WorkContent } from "../ProjectsRail";
@@ -27,8 +32,15 @@ import { SkillsContent } from "../Skills";
 import { ContactContent } from "../Contact";
 import { BlogApp } from "../apps/BlogApp";
 import { NotesApp } from "../apps/NotesApp";
+import { VideosApp } from "../apps/VideosApp";
+import { StoryApp } from "../apps/StoryApp";
+import { MemoriesApp } from "../apps/MemoriesApp";
+import { LifelineApp } from "../apps/LifelineApp";
+import { HobbiesApp } from "../apps/HobbiesApp";
 import { Dobby } from "../Dobby";
 import { site } from "@/lib/data";
+import { track } from "@/lib/track";
+import { DEFAULT_SETTINGS, type SiteSettings } from "@/lib/settings-shared";
 
 const EASE = [0.25, 1, 0.5, 1] as const;
 
@@ -37,17 +49,22 @@ export type AppId =
   | "work"
   | "experience"
   | "skills"
+  | "videos"
   | "contact"
   | "terminal"
   | "blog"
-  | "notes";
+  | "notes"
+  | "story"
+  | "memories"
+  | "lifeline"
+  | "hobbies";
 
 type AppDef = {
   id: AppId;
   label: string;
   title: string;
   icon: React.ElementType;
-  render: (mode: Mode) => React.ReactNode;
+  render: () => React.ReactNode;
 };
 
 const APPS: AppDef[] = [
@@ -56,7 +73,7 @@ const APPS: AppDef[] = [
     label: "Cover letter",
     title: "README.for-you.md",
     icon: FileHeart,
-    render: (mode) => <CoverLetter mode={mode} />,
+    render: () => <CoverLetter />,
   },
   {
     id: "work",
@@ -68,14 +85,14 @@ const APPS: AppDef[] = [
   {
     id: "experience",
     label: "Experience",
-    title: "medikzo — git log",
-    icon: GitCommitHorizontal,
+    title: "experience — full-stack engineer @ medikzo",
+    icon: Briefcase,
     render: () => <ExperienceContent />,
   },
   {
     id: "skills",
-    label: "package.json",
-    title: "shiv/package.json",
+    label: "skills.json",
+    title: "shiv/skills.json",
     icon: Braces,
     render: () => <SkillsContent />,
   },
@@ -102,57 +119,64 @@ const APPS: AppDef[] = [
   },
   {
     id: "notes",
-    label: "Visitor notes",
+    label: "Notes",
     title: "notes.wall — left by visitors",
     icon: StickyNote,
     render: () => <NotesApp />,
   },
+  {
+    id: "videos",
+    label: "Videos",
+    title: "videos.app — occasionally on camera",
+    icon: Clapperboard,
+    render: () => <VideosApp />,
+  },
+  /* ── the life partition ── */
+  {
+    id: "story",
+    label: "Story",
+    title: "hello-human.md",
+    icon: BookHeart,
+    render: () => <StoryApp />,
+  },
+  {
+    id: "memories",
+    label: "Memories",
+    title: "memory-board — drag things",
+    icon: Camera,
+    render: () => <MemoriesApp />,
+  },
+  {
+    id: "lifeline",
+    label: "Timeline",
+    title: "the-anti-resume.svg",
+    icon: Route,
+    render: () => <LifelineApp />,
+  },
+  {
+    id: "hobbies",
+    label: "Skill tree",
+    title: "skill-tree.rpg — build: chaotic good",
+    icon: Trees,
+    render: () => <HobbiesApp />,
+  },
 ];
 
-/* what each audience sees first, and in what order */
-const MODE_CONFIG: Record<Mode, { defaultApp: AppId; order: AppId[] }> = {
-  recruiter: {
-    defaultApp: "letter",
-    order: [
-      "letter",
-      "experience",
-      "work",
-      "skills",
-      "contact",
-      "blog",
-      "notes",
-      "terminal",
-    ],
-  },
-  developer: {
-    defaultApp: "terminal",
-    order: [
-      "terminal",
-      "work",
-      "skills",
-      "blog",
-      "experience",
-      "letter",
-      "notes",
-      "contact",
-    ],
-  },
-  visitor: {
-    defaultApp: "work",
-    order: [
-      "work",
-      "blog",
-      "notes",
-      "experience",
-      "skills",
-      "letter",
-      "contact",
-      "terminal",
-    ],
-  },
-};
-
-const MODE_KEY = "shivos-mode";
+/* each side has one fixed order — everyone sees the same OS */
+const WORK_APPS: AppId[] = [
+  "work",
+  "experience",
+  "letter",
+  "skills",
+  "terminal",
+  "contact",
+  "notes",
+  "blog",
+  "videos",
+];
+const WORK_DEFAULT: AppId = "work";
+const LIFE_APPS: AppId[] = ["story", "memories", "lifeline", "hobbies", "notes"];
+const LIFE_DEFAULT: AppId = "story";
 
 /* ───────────────────────── boot screen ───────────────────────── */
 
@@ -199,13 +223,11 @@ function BootScreen({ onDone }: { onDone: () => void }) {
 
 function Stage({
   app,
-  mode,
   maximized,
   onToggleMax,
   onHome,
 }: {
   app: AppDef;
-  mode: Mode;
   maximized: boolean;
   onToggleMax: () => void;
   onHome: () => void;
@@ -273,7 +295,7 @@ function Stage({
             transition={{ duration: 0.45, ease: EASE }}
             className="h-full overflow-y-auto overscroll-contain"
           >
-            {app.render(mode)}
+            {app.render()}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -283,8 +305,15 @@ function Stage({
 
 /* ─────────────────────── mobile home screen ───────────────────── */
 
-function MobileOS({ mode }: { mode: Mode }) {
-  const config = MODE_CONFIG[mode];
+function MobileOS({
+  settings,
+  side,
+  onSwitchSide,
+}: {
+  settings: SiteSettings;
+  side: Side;
+  onSwitchSide: (side: Side) => void;
+}) {
   const [openApp, setOpenApp] = useState<AppId | null>(null);
   const app = APPS.find((a) => a.id === openApp);
 
@@ -295,22 +324,42 @@ function MobileOS({ mode }: { mode: Mode }) {
     return () => window.removeEventListener("os-open", onOpen);
   }, []);
 
-  const ordered = config.order.map((id) => APPS.find((a) => a.id === id)!);
+  const life = side === "life";
+  const ordered = (life ? LIFE_APPS : WORK_APPS)
+    .filter((id) => settings.dock[id] !== false)
+    .map((id) => APPS.find((a) => a.id === id)!);
 
   return (
     <div className="relative flex h-svh flex-col overflow-hidden">
       <DotGrid />
 
       <div className="relative z-10 px-7 pt-16">
-        <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-faint">
-          ❖ ShivOS · viewing as {mode}
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-faint">
+            ❖ ShivOS · {life ? "life side" : "work side"}
+          </p>
+          <button
+            onClick={() => onSwitchSide(life ? "work" : "life")}
+            className="rounded-full border border-line bg-surface px-3 py-1 font-mono text-[10px] text-muted"
+          >
+            {life ? "→ work" : "→ life"}
+          </button>
+        </div>
         <h1 className="mt-3 text-5xl font-medium tracking-tighter text-foreground">
-          Hi, I&apos;m Shiv.
+          {life ? "still Shiv." : "Hi, I'm Shiv."}
         </h1>
         <p className="mt-3 text-sm font-light leading-relaxed text-muted">
-          <span className="text-foreground">CS enthusiast</span> — doing
-          full-stack development right now. Tap an app.
+          {life ? (
+            <>
+              <span className="text-foreground">Full-time human</span> — this
+              side has no KPIs. Tap around.
+            </>
+          ) : (
+            <>
+              <span className="text-foreground">CS enthusiast</span> — doing
+              full-stack development right now. Tap an app.
+            </>
+          )}
         </p>
       </div>
 
@@ -322,14 +371,17 @@ function MobileOS({ mode }: { mode: Mode }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: EASE, delay: 0.1 + i * 0.06 }}
             whileTap={{ scale: 0.88 }}
-            onClick={() => setOpenApp(appDef.id)}
+            onClick={() => {
+              setOpenApp(appDef.id);
+              track("app_open", { app: appDef.id, surface: "mobile" });
+            }}
             className="flex flex-col items-center gap-2"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-line bg-surface text-muted shadow-[0_2px_10px_rgba(0,0,0,0.06)]">
               <appDef.icon className="h-6 w-6" strokeWidth={1.5} />
             </span>
             <span className="text-[10px] font-medium text-muted">
-              {appDef.id === "skills" ? "pkg.json" : appDef.id}
+              {appDef.label}
             </span>
           </motion.button>
         ))}
@@ -340,6 +392,7 @@ function MobileOS({ mode }: { mode: Mode }) {
           href={site.resume}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => track("resume_click", { from: "mobile_home" })}
           className="flex flex-col items-center gap-2"
         >
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-line bg-surface text-muted shadow-[0_2px_10px_rgba(0,0,0,0.06)]">
@@ -375,7 +428,7 @@ function MobileOS({ mode }: { mode: Mode }) {
               </span>
             </div>
             <div className="flex-1 overflow-y-auto overscroll-contain">
-              {app.render(mode)}
+              {app.render()}
             </div>
           </motion.div>
         )}
@@ -388,14 +441,37 @@ function MobileOS({ mode }: { mode: Mode }) {
 
 /* ────────────────────────── the workspace ─────────────────────── */
 
+const SIDE_KEY = "shivos-side";
+
 export function Desktop() {
   const [booted, setBooted] = useState(false);
-  const [mode, setMode] = useState<Mode | null>(null);
-  const [gateDone, setGateDone] = useState(false);
-  const [activeApp, setActiveApp] = useState<AppId>("letter");
+  const [activeApp, setActiveApp] = useState<AppId>(WORK_DEFAULT);
   const [maximized, setMaximized] = useState(false);
   const [isDesktop, setIsDesktop] = useState<boolean | null>(null);
+  const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
+  const [side, setSide] = useState<Side>("work");
+  const [reveal, setReveal] = useState<Side | null>(null);
+  const [vibe, setVibe] = useState(false);
   const railRef = useRef<HTMLDivElement>(null);
+
+  // the warm theme is a class on <html>, same mechanism as dark mode
+  useEffect(() => {
+    document.documentElement.classList.toggle("human", side === "life");
+    sessionStorage.setItem(SIDE_KEY, side);
+    if (side === "work") setVibe(false);
+  }, [side]);
+
+  const switchSide = (target: Side) => {
+    if (target === side || reveal) return;
+    track("side_switch", { to: target });
+    setReveal(target);
+    // swap worlds mid-reveal, while the wave covers the screen
+    setTimeout(() => {
+      setSide(target);
+      setActiveApp(target === "life" ? LIFE_DEFAULT : WORK_DEFAULT);
+    }, 340);
+    setTimeout(() => setReveal(null), 900);
+  };
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
@@ -405,46 +481,51 @@ export function Desktop() {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  // restore a previous choice
+  // dock visibility, status line — admin-configurable
   useEffect(() => {
-    const stored = sessionStorage.getItem(MODE_KEY) as Mode | null;
-    if (stored && ["recruiter", "developer", "visitor"].includes(stored)) {
-      setMode(stored);
-      setActiveApp(MODE_CONFIG[stored].defaultApp);
-      setGateDone(true);
+    let alive = true;
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((json) => alive && json.settings && setSettings(json.settings))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // returning to the life side picks up where they left off
+  useEffect(() => {
+    if (sessionStorage.getItem(SIDE_KEY) === "life") {
+      setSide("life");
+      setActiveApp(LIFE_DEFAULT);
     }
   }, []);
 
-  const pickMode = (picked: Mode) => {
-    sessionStorage.setItem(MODE_KEY, picked);
-    setMode(picked);
-    setActiveApp(MODE_CONFIG[picked].defaultApp);
-    setGateDone(true);
-  };
-
-  const switchMode = () => {
-    sessionStorage.removeItem(MODE_KEY);
-    setGateDone(false);
-    setMode(null);
-  };
-
-  // terminal + palette open apps from anywhere
+  // terminal + palette open apps from anywhere — crossing sides if needed
   useEffect(() => {
     const onOpen = (e: Event) => {
       const id = (e as CustomEvent<string>).detail as AppId;
-      if (APPS.some((a) => a.id === id)) setActiveApp(id);
+      if (!APPS.some((a) => a.id === id)) return;
+      const isLifeApp = LIFE_APPS.includes(id) && id !== "notes";
+      if (isLifeApp && side !== "life") switchSide("life");
+      else if (!isLifeApp && side !== "work" && id !== "notes")
+        switchSide("work");
+      setActiveApp(id);
+    };
+    const onSide = (e: Event) => {
+      const target = (e as CustomEvent<Side>).detail;
+      if (target === "work" || target === "life") switchSide(target);
     };
     window.addEventListener("os-open", onOpen);
-    return () => window.removeEventListener("os-open", onOpen);
-  }, []);
+    window.addEventListener("os-side", onSide);
+    return () => {
+      window.removeEventListener("os-open", onOpen);
+      window.removeEventListener("os-side", onSide);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [side, reveal]);
 
   if (isDesktop === null) return <div className="h-svh" />;
-
-  const gate = (
-    <AnimatePresence>
-      {booted && !gateDone && <Gate onPick={pickMode} />}
-    </AnimatePresence>
-  );
 
   if (!isDesktop) {
     return (
@@ -452,37 +533,89 @@ export function Desktop() {
         <AnimatePresence>
           {!booted && <BootScreen onDone={() => setBooted(true)} />}
         </AnimatePresence>
-        {gate}
-        {mode && gateDone && <MobileOS mode={mode} />}
+        {booted && (
+          <MobileOS
+            settings={settings}
+            side={side}
+            onSwitchSide={(target) => {
+              setSide(target);
+              track("side_switch", { to: target, surface: "mobile" });
+            }}
+          />
+        )}
       </>
     );
   }
 
-  const config = mode ? MODE_CONFIG[mode] : MODE_CONFIG.visitor;
-  const orderedApps: DockApp[] = config.order.map((id) => {
+  const baseOrder = side === "life" ? LIFE_APPS : WORK_APPS;
+  const defaultApp = side === "life" ? LIFE_DEFAULT : WORK_DEFAULT;
+  const visibleOrder = baseOrder.filter((id) => settings.dock[id] !== false);
+  const orderedApps: DockApp[] = visibleOrder.map((id) => {
     const app = APPS.find((a) => a.id === id)!;
     return { id: app.id, label: app.label, icon: app.icon };
   });
-  const stageApp = APPS.find((a) => a.id === activeApp)!;
+  // a hidden app can't be the stage — fall back to the first visible one
+  const homeApp = visibleOrder.includes(defaultApp)
+    ? defaultApp
+    : (visibleOrder[0] ?? defaultApp);
+  const stageApp =
+    APPS.find(
+      (a) => a.id === (visibleOrder.includes(activeApp) ? activeApp : homeApp)
+    ) ?? APPS[0];
 
   return (
     <div className="relative h-svh overflow-hidden">
       <AnimatePresence>
         {!booted && <BootScreen onDone={() => setBooted(true)} />}
       </AnimatePresence>
-      {gate}
 
-      {mode && gateDone && (
+      {/* the partition wave — a warm (or cool) circle swallows the screen */}
+      <AnimatePresence>
+        {reveal && (
+          <motion.div
+            initial={{ clipPath: "circle(0% at 50% 24px)" }}
+            animate={{ clipPath: "circle(150% at 50% 24px)" }}
+            exit={{ opacity: 0, transition: { duration: 0.35 } }}
+            transition={{ duration: 0.55, ease: EASE }}
+            className="pointer-events-none fixed inset-0 z-[95] flex items-center justify-center"
+            style={{
+              background: reveal === "life" ? "#e8d9bd" : "#d5dbe3",
+            }}
+          >
+            <motion.span
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.15, duration: 0.3 }}
+              className="handwritten text-3xl text-[#4a3b2c]"
+            >
+              {reveal === "life" ? "switching to human…" : "back to work…"}
+            </motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {booted && (
         <>
-          <MenuBar mode={mode} onSwitchMode={switchMode} />
+          <MenuBar
+            side={side}
+            onSwitchSide={switchSide}
+            vibe={vibe}
+            onToggleVibe={() => {
+              setVibe((v) => !v);
+              track("vibe_toggle", { on: !vibe });
+            }}
+          />
 
-          {/* wallpaper */}
+          {/* wallpaper — the quiet dot grid; the galaxy lives in the rail */}
           <div className="absolute inset-0" aria-hidden>
             <DotGrid />
           </div>
 
-          {/* the tiling — rail + stage, side by side, never overlapping */}
-          <div className="absolute inset-x-4 bottom-24 top-14 flex gap-4">
+          <VibeLayer active={vibe && side === "life"} />
+
+          {/* the tiling — rail + stage, side by side, never overlapping;
+              bottom clears the dock with its always-on labels */}
+          <div className="absolute inset-x-4 bottom-28 top-14 flex gap-4">
             <motion.aside
               ref={railRef}
               initial={{ opacity: 0, x: -24 }}
@@ -496,7 +629,7 @@ export function Desktop() {
               className="shrink-0 overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_16px_60px_rgba(0,0,0,0.06)] dark:shadow-[0_16px_60px_rgba(0,0,0,0.35)]"
             >
               <div className="h-full w-[300px]">
-                <ProfileRail />
+                <ProfileRail status={settings.status} side={side} />
               </div>
             </motion.aside>
 
@@ -509,18 +642,20 @@ export function Desktop() {
             >
               <Stage
                 app={stageApp}
-                mode={mode}
                 maximized={maximized}
                 onToggleMax={() => setMaximized((m) => !m)}
-                onHome={() => setActiveApp(config.defaultApp)}
+                onHome={() => setActiveApp(homeApp)}
               />
             </motion.div>
           </div>
 
           <Dock
             apps={orderedApps}
-            activeId={activeApp}
-            onSelect={(id) => setActiveApp(id as AppId)}
+            activeId={stageApp.id}
+            onSelect={(id) => {
+              setActiveApp(id as AppId);
+              track("app_open", { app: id, surface: "dock" });
+            }}
           />
 
           <Dobby />

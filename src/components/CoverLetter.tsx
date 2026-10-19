@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { Check, ArrowUpRight, Download } from "lucide-react";
 import { site, letter } from "@/lib/data";
-import type { Mode } from "./os/Gate";
 
 const EASE = [0.25, 1, 0.5, 1] as const;
 
@@ -16,8 +15,8 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
 };
 
-/** The cover letter — greeting adapts to whoever's reading. */
-export function CoverLetter({ mode }: { mode: Mode }) {
+/** The cover letter. */
+export function CoverLetter() {
   return (
     <motion.div
       variants={stagger}
@@ -26,14 +25,14 @@ export function CoverLetter({ mode }: { mode: Mode }) {
       className="mx-auto flex max-w-xl flex-col gap-5 p-7"
     >
       <motion.p variants={fadeUp} className="font-mono text-[11px] text-faint">
-        # README.for-{mode}s.md
+        # README.for-you.md
       </motion.p>
 
       <motion.p
         variants={fadeUp}
         className="text-xl font-medium tracking-tight text-foreground"
       >
-        {letter.greetings[mode]}
+        {letter.greeting}
       </motion.p>
 
       {letter.paragraphs.map((paragraph, i) => (

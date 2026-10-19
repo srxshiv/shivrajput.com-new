@@ -14,7 +14,19 @@ import {
   PenLine,
   StickyNote,
   Lock,
+  BarChart3,
+  FolderGit2,
+  Gauge,
+  Clapperboard,
+  Camera,
+  Settings2,
 } from "lucide-react";
+import { AnalyticsTab } from "./AnalyticsTab";
+import { ProjectsTab } from "./ProjectsTab";
+import { MetricsTab } from "./MetricsTab";
+import { VideosTab } from "./VideosTab";
+import { MemoriesTab } from "./MemoriesTab";
+import { SiteTab } from "./SiteTab";
 
 const EASE = [0.25, 1, 0.5, 1] as const;
 
@@ -46,7 +58,16 @@ type Note = {
   createdAt: string;
 };
 
-type Tab = "context" | "blog" | "notes";
+type Tab =
+  | "analytics"
+  | "context"
+  | "projects"
+  | "blog"
+  | "metrics"
+  | "videos"
+  | "memories"
+  | "notes"
+  | "site";
 
 /* ─────────────────────────── login ─────────────────────────── */
 
@@ -630,7 +651,7 @@ function NotesTab() {
 
 export function AdminPanel() {
   const [authed, setAuthed] = useState<boolean | null>(null);
-  const [tab, setTab] = useState<Tab>("context");
+  const [tab, setTab] = useState<Tab>("analytics");
 
   useEffect(() => {
     fetch("/api/admin/session")
@@ -650,9 +671,15 @@ export function AdminPanel() {
   if (!authed) return <Login onAuthed={() => setAuthed(true)} />;
 
   const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
-    { id: "context", label: "Dobby's brain", icon: Brain },
+    { id: "analytics", label: "Analytics", icon: BarChart3 },
+    { id: "context", label: "Dobby", icon: Brain },
+    { id: "projects", label: "Projects", icon: FolderGit2 },
     { id: "blog", label: "Blog", icon: PenLine },
-    { id: "notes", label: "Visitor notes", icon: StickyNote },
+    { id: "metrics", label: "Numbers", icon: Gauge },
+    { id: "videos", label: "Videos", icon: Clapperboard },
+    { id: "memories", label: "Memories", icon: Camera },
+    { id: "notes", label: "Notes", icon: StickyNote },
+    { id: "site", label: "Site", icon: Settings2 },
   ];
 
   return (
@@ -713,9 +740,15 @@ export function AdminPanel() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.28, ease: EASE }}
           >
+            {tab === "analytics" && <AnalyticsTab />}
             {tab === "context" && <ContextTab />}
+            {tab === "projects" && <ProjectsTab />}
             {tab === "blog" && <BlogTab />}
+            {tab === "metrics" && <MetricsTab />}
+            {tab === "videos" && <VideosTab />}
+            {tab === "memories" && <MemoriesTab />}
             {tab === "notes" && <NotesTab />}
+            {tab === "site" && <SiteTab />}
           </motion.div>
         </AnimatePresence>
       </main>

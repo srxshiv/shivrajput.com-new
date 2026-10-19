@@ -2,30 +2,100 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import Image from "next/image";
 import {
   motion,
   AnimatePresence,
   useMotionValue,
   useSpring,
 } from "framer-motion";
-import { ArrowLeft, ArrowRight, ArrowUpRight, X } from "lucide-react";
-import { projects, type Project } from "@/lib/data";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  X,
+  Lightbulb,
+  Sparkles,
+  Gauge,
+  Wrench,
+  Smile,
+  Loader2,
+} from "lucide-react";
+import { projects as staticProjects } from "@/lib/data";
 import { GithubIcon } from "./BrandIcons";
+import { track } from "@/lib/track";
 
 const EASE = [0.25, 1, 0.5, 1] as const;
 
 /* alternating resting tilts */
 const tilts = [-1.6, 1.3, -1.1, 1.5, -1.3];
 
-/** Case-file card: giant index numeral, photo develops on hover, 3D tilt. */
+export type StoryItem = {
+  kind: "decision" | "feature" | "metric" | "challenge" | "quirk";
+  title: string;
+  body: string;
+};
+
+export type ProjectLevel = "advanced" | "intermediate" | "beginner";
+
+export type RailProject = {
+  id?: string;
+  slug: string;
+  title: string;
+  year: string;
+  summary: string;
+  detail: string;
+  image: string | null;
+  live: string | null;
+  github: string | null;
+  stack: string[];
+  story: StoryItem[];
+  level: ProjectLevel;
+};
+
+/* stacked top to bottom — hardest first */
+const LEVELS: { key: ProjectLevel; label: string; note: string }[] = [
+  { key: "advanced", label: "advanced", note: "the deep end — systems, not screens" },
+  { key: "intermediate", label: "intermediate", note: "shipped, used, maintained" },
+  { key: "beginner", label: "beginner", note: "where the reps started" },
+];
+
+const STORY_META: Record<
+  StoryItem["kind"],
+  { icon: React.ElementType; label: string; accent: boolean }
+> = {
+  decision: { icon: Lightbulb, label: "decision", accent: false },
+  feature: { icon: Sparkles, label: "feature", accent: false },
+  metric: { icon: Gauge, label: "metric", accent: true },
+  challenge: { icon: Wrench, label: "challenge", accent: false },
+  quirk: { icon: Smile, label: "aside", accent: false },
+};
+
+/* fallback if the database is briefly unreachable */
+const FALLBACK: RailProject[] = staticProjects.map((p) => ({
+  slug: p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+  title: p.title,
+  year: p.year,
+  summary: p.summary,
+  detail: p.detail,
+  image: p.image ?? null,
+  live: p.live ?? null,
+  github: p.github ?? null,
+  stack: p.stack,
+  story: [],
+  level: p.level,
+}));
+
+const isLevel = (value: unknown): value is ProjectLevel =>
+  value === "advanced" || value === "intermediate" || value === "beginner";
+
+/** Card that tilts in 3D toward the cursor and springs back on leave. */
 function ProjectCard({
   project,
   index,
   tilt,
   onOpen,
 }: {
-  project: Project;
+  project: RailProject;
   index: number;
   tilt: number;
   onOpen: () => void;
@@ -72,16 +142,19 @@ function ProjectCard({
           style={{ rotateX: srx, rotateY: sry }}
           className="flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-surface shadow-[0_2px_20px_rgba(0,0,0,0.05)] transition-[border-color,box-shadow] duration-300 group-hover:border-foreground/20 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_20px_rgba(0,0,0,0.3)] dark:group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
         >
-          <div className="relative aspect-[16/9] w-full overflow-hidden">
-            {/* photo "develops" from grayscale on hover */}
-            <Image
-              src={project.image}
-              alt={`${project.title} screenshot`}
-              fill
-              sizes="400px"
-              draggable={false}
-              className="object-cover object-top grayscale-[0.85] transition-[filter,transform] duration-700 ease-out group-hover:scale-[1.04] group-hover:grayscale-0"
-            />
+          <div className="relative aspect-[16/9] w-full overflow-hidden bg-background">
+            {project.image && (
+              // arbitrary admin-supplied hosts — plain img avoids the
+              // next/image remotePatterns allow-list
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={project.image}
+                alt={`${project.title} screenshot`}
+                draggable={false}
+                loading="lazy"
+                className="h-full w-full object-cover object-top grayscale-[0.85] transition-[filter,transform] duration-700 ease-out group-hover:scale-[1.04] group-hover:grayscale-0"
+              />
+            )}
             <div className="absolute left-4 top-4 rounded-full bg-black/50 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-white/90 backdrop-blur-sm">
               case file · {project.year}
             </div>
@@ -105,7 +178,7 @@ function ProjectCard({
                 ))}
               </div>
               <span className="flex shrink-0 items-center gap-1 text-[13px] font-medium text-faint transition-colors duration-300 group-hover:text-accent">
-                open file
+                the story
                 <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </span>
             </div>
@@ -116,13 +189,13 @@ function ProjectCard({
   );
 }
 
-/** Spec-sheet modal — reads like a technical datasheet. */
+/** The case file — spec header, then the project tells its own story. */
 function ProjectModal({
   project,
   index,
   onClose,
 }: {
-  project: Project;
+  project: RailProject;
   index: number;
   onClose: () => void;
 }) {
@@ -136,25 +209,7 @@ function ProjectModal({
     };
   }, [onClose]);
 
-  const specRows: [string, React.ReactNode][] = [
-    ["file", `#${String(index + 1).padStart(2, "0")} · ${project.title}`],
-    ["year", project.year],
-    ["role", "designed & built solo"],
-    [
-      "status",
-      project.live ? (
-        <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> live in
-          production
-        </span>
-      ) : (
-        "source available"
-      ),
-    ],
-  ];
-
-  /* portal to <body> — an ancestor's filter/blur transition would otherwise
-     trap this fixed overlay inside the panel's stacking context */
+  /* portal to <body> — ancestor filter/blur transitions trap fixed overlays */
   return createPortal(
     <motion.div
       initial={{ opacity: 0 }}
@@ -172,95 +227,161 @@ function ProjectModal({
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-label={project.title}
-        className="relative max-h-[88vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-line bg-background shadow-[0_32px_100px_rgba(0,0,0,0.3)]"
+        className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto overscroll-contain rounded-3xl border border-line bg-background shadow-[0_32px_100px_rgba(0,0,0,0.3)]"
       >
-        <div className="relative aspect-[16/8] w-full">
-          <Image
-            src={project.image}
-            alt={`${project.title} screenshot`}
-            fill
-            sizes="(max-width: 768px) 100vw, 768px"
-            className="object-cover object-top"
-          />
-          <motion.button
-            onClick={onClose}
-            aria-label="Close"
-            whileHover={{ rotate: 90, scale: 1.1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 16 }}
-            className="glass absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-muted hover:text-foreground"
-          >
-            <X className="h-4 w-4" />
-          </motion.button>
-        </div>
+        {project.image && (
+          <div className="relative aspect-[16/7] w-full">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={project.image}
+              alt={`${project.title} screenshot`}
+              className="h-full w-full object-cover object-top"
+            />
+            <motion.button
+              onClick={onClose}
+              aria-label="Close"
+              whileHover={{ rotate: 90, scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 16 }}
+              className="glass absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-muted hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </motion.button>
+          </div>
+        )}
 
-        <div className="grid grid-cols-1 gap-8 p-7 md:grid-cols-[1.5fr_1fr] md:p-10">
-          {/* narrative */}
-          <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 p-7 md:p-9">
+          <div className="flex items-baseline justify-between gap-4">
             <h3 className="text-3xl font-medium tracking-tight text-foreground md:text-4xl">
               {project.title}
             </h3>
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">
-              {project.summary}
-            </p>
-            <p className="text-[15px] font-light leading-relaxed text-muted">
-              {project.detail}
-            </p>
-            <div className="mt-1 flex items-center gap-3">
-              {project.live && (
-                <motion.a
-                  href={project.live}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.05, rotate: -1 }}
-                  whileTap={{ scale: 0.96 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 16 }}
-                  className="flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background"
-                >
-                  Visit live
-                  <ArrowUpRight className="h-4 w-4" />
-                </motion.a>
-              )}
-              {project.github && (
-                <motion.a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.05, rotate: 1 }}
-                  whileTap={{ scale: 0.96 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 16 }}
-                  className="flex items-center gap-2 rounded-full border border-line px-6 py-3 text-sm font-medium text-muted transition-colors duration-300 hover:border-foreground/30 hover:text-foreground"
-                >
-                  <GithubIcon className="h-4 w-4" />
-                  Source
-                </motion.a>
-              )}
-            </div>
+            <span className="shrink-0 font-mono text-xs text-faint">
+              #{String(index + 1).padStart(2, "0")} · {project.year}
+            </span>
+          </div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">
+            {project.summary}
+          </p>
+          <p className="text-[15px] font-light leading-relaxed text-muted">
+            {project.detail}
+          </p>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {project.stack.map((tech) => (
+              <span
+                key={tech}
+                className="rounded-full border border-line bg-surface px-3 py-1 font-mono text-[10.5px] tracking-tight text-muted"
+              >
+                {tech}
+              </span>
+            ))}
           </div>
 
-          {/* spec table */}
-          <div className="flex flex-col self-start rounded-2xl border border-line bg-surface font-mono text-[12px]">
-            {specRows.map(([key, val]) => (
-              <div
-                key={key}
-                className="flex items-baseline justify-between gap-4 border-b border-line px-4 py-3 last:border-none"
+          <div className="flex items-center gap-3">
+            {project.live && (
+              <motion.a
+                href={project.live}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => track("project_live_click", { slug: project.slug })}
+                whileHover={{ scale: 1.05, rotate: -1 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 300, damping: 16 }}
+                className="flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background"
               >
-                <span className="uppercase tracking-[0.15em] text-faint">
-                  {key}
-                </span>
-                <span className="text-right text-foreground">{val}</span>
-              </div>
-            ))}
-            <div className="flex flex-wrap gap-1.5 px-4 py-3">
-              {project.stack.map((tech) => (
-                <span
-                  key={tech}
-                  className="rounded-full border border-line bg-background px-2.5 py-1 text-[10px] tracking-tight text-muted"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
+                Visit live
+                <ArrowUpRight className="h-4 w-4" />
+              </motion.a>
+            )}
+            {project.github && (
+              <motion.a
+                href={project.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => track("project_source_click", { slug: project.slug })}
+                whileHover={{ scale: 1.05, rotate: 1 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 300, damping: 16 }}
+                className="flex items-center gap-2 rounded-full border border-line px-6 py-3 text-sm font-medium text-muted transition-colors duration-300 hover:border-foreground/30 hover:text-foreground"
+              >
+                <GithubIcon className="h-4 w-4" />
+                Source
+              </motion.a>
+            )}
           </div>
+
+          {/* ── the story timeline ─────────────────── */}
+          {project.story.length > 0 && (
+            <div className="mt-2">
+              <div className="flex items-baseline justify-between">
+                <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-faint">
+                  the story
+                </p>
+                <p className="handwritten rotate-[-2deg] text-base text-faint">
+                  scroll — it tells itself ↓
+                </p>
+              </div>
+
+              <div className="mt-5 flex flex-col">
+                {project.story.map((item, i) => {
+                  const meta = STORY_META[item.kind] ?? STORY_META.feature;
+                  return (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -14 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: "-30px" }}
+                      transition={{ duration: 0.5, ease: EASE }}
+                      className="group relative flex gap-4 pb-7 last:pb-0"
+                    >
+                      {/* spine */}
+                      <div className="relative flex w-8 shrink-0 justify-center">
+                        {i < project.story.length - 1 && (
+                          <span className="absolute top-8 h-full w-px bg-line" />
+                        )}
+                        <span
+                          className={`relative z-10 flex h-8 w-8 items-center justify-center rounded-full border ${
+                            meta.accent
+                              ? "border-accent/50 bg-accent/10 text-accent"
+                              : "border-line bg-surface text-muted"
+                          }`}
+                        >
+                          <meta.icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+                        </span>
+                      </div>
+
+                      <div className="min-w-0 pt-1">
+                        <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
+                          <span className="font-mono text-[9.5px] uppercase tracking-[0.2em] text-faint">
+                            {meta.label}
+                          </span>
+                          <h4
+                            className={`text-[15px] font-medium tracking-tight ${
+                              meta.accent ? "text-accent" : "text-foreground"
+                            }`}
+                          >
+                            {item.title}
+                          </h4>
+                        </div>
+                        <p
+                          className={`mt-1.5 text-[13.5px] leading-relaxed ${
+                            item.kind === "quirk"
+                              ? "handwritten rotate-[-0.5deg] text-[16px] text-muted"
+                              : "font-light text-muted"
+                          }`}
+                        >
+                          {item.body}
+                        </p>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              <p className="handwritten mt-6 rotate-[-1.5deg] text-center text-lg text-faint">
+                — end of case file #{String(index + 1).padStart(2, "0")} —
+              </p>
+            </div>
+          )}
         </div>
       </motion.div>
     </motion.div>,
@@ -268,39 +389,51 @@ function ProjectModal({
   );
 }
 
-export function WorkContent() {
+/** One horizontal rail — a single difficulty tier, drag-scrolled on its own. */
+function LevelRail({
+  label,
+  note,
+  items,
+  showTail,
+  onOpen,
+}: {
+  label: string;
+  note: string;
+  items: { project: RailProject; index: number }[];
+  showTail: boolean;
+  onOpen: (index: number) => void;
+}) {
   const trackRef = useRef<HTMLDivElement>(null);
   const drag = useRef({ down: false, startX: 0, scrollLeft: 0, moved: 0 });
   const [grabbing, setGrabbing] = useState(false);
-  const [selected, setSelected] = useState<number | null>(null);
   const progress = useMotionValue(0);
   const smoothProgress = useSpring(progress, { stiffness: 140, damping: 26 });
 
   const onScroll = () => {
-    const track = trackRef.current;
-    if (!track) return;
-    const max = track.scrollWidth - track.clientWidth;
-    progress.set(max > 0 ? track.scrollLeft / max : 0);
+    const el = trackRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    progress.set(max > 0 ? el.scrollLeft / max : 0);
   };
 
   const onMouseDown = (e: React.MouseEvent) => {
-    const track = trackRef.current;
-    if (!track) return;
+    const el = trackRef.current;
+    if (!el) return;
     drag.current = {
       down: true,
       startX: e.pageX,
-      scrollLeft: track.scrollLeft,
+      scrollLeft: el.scrollLeft,
       moved: 0,
     };
     setGrabbing(true);
   };
 
   const onMouseMove = (e: React.MouseEvent) => {
-    const track = trackRef.current;
-    if (!track || !drag.current.down) return;
+    const el = trackRef.current;
+    if (!el || !drag.current.down) return;
     const dx = e.pageX - drag.current.startX;
     drag.current.moved = Math.max(drag.current.moved, Math.abs(dx));
-    track.scrollLeft = drag.current.scrollLeft - dx;
+    el.scrollLeft = drag.current.scrollLeft - dx;
   };
 
   const endDrag = () => {
@@ -308,6 +441,7 @@ export function WorkContent() {
     setGrabbing(false);
   };
 
+  /* swallow clicks that were actually drags */
   const onClickCapture = (e: React.MouseEvent) => {
     if (drag.current.moved > 6) {
       e.preventDefault();
@@ -320,12 +454,22 @@ export function WorkContent() {
   }, []);
 
   return (
-    <div className="py-5">
-      <div className="flex items-center justify-between pl-10 pr-6">
-        <p className="handwritten rotate-[-2deg] text-lg">
-          five case files — drag through, open one →
-        </p>
-        <div className="flex items-center gap-2">
+    <section className="py-4">
+      <div className="flex items-end justify-between gap-4 pl-10 pr-6">
+        <div className="min-w-0">
+          <div className="flex items-baseline gap-3">
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.25em] text-foreground">
+              {label}
+            </h2>
+            <span className="font-mono text-[10px] text-faint">
+              {items.length} {items.length === 1 ? "file" : "files"}
+            </span>
+          </div>
+          <p className="handwritten mt-0.5 rotate-[-1.5deg] text-base text-faint">
+            {note}
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
           {([-1, 1] as const).map((dir) => (
             <motion.button
               key={dir}
@@ -333,7 +477,7 @@ export function WorkContent() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              aria-label={dir === -1 ? "Scroll projects left" : "Scroll projects right"}
+              aria-label={`Scroll ${label} projects ${dir === -1 ? "left" : "right"}`}
               className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-muted transition-colors duration-300 hover:border-foreground/30 hover:text-foreground"
             >
               {dir === -1 ? (
@@ -360,27 +504,29 @@ export function WorkContent() {
           grabbing ? "cursor-grabbing" : "cursor-grab"
         }`}
       >
-        {projects.map((project, i) => (
+        {items.map(({ project, index }) => (
           <ProjectCard
-            key={project.title}
+            key={project.slug}
             project={project}
-            index={i}
-            tilt={tilts[i % tilts.length]}
-            onOpen={() => setSelected(i)}
+            index={index}
+            tilt={tilts[index % tilts.length]}
+            onOpen={() => onOpen(index)}
           />
         ))}
-        <div className="flex w-[220px] shrink-0 snap-start items-center justify-center">
-          <motion.a
-            href="https://github.com/srxshiv"
-            target="_blank"
-            rel="noopener noreferrer"
-            draggable={false}
-            whileHover={{ rotate: 0, scale: 1.06 }}
-            className="handwritten rotate-3 text-center text-2xl text-faint transition-colors duration-300 hover:text-foreground"
-          >
-            more on my github →
-          </motion.a>
-        </div>
+        {showTail && (
+          <div className="flex w-[220px] shrink-0 snap-start items-center justify-center">
+            <motion.a
+              href="https://github.com/srxshiv"
+              target="_blank"
+              rel="noopener noreferrer"
+              draggable={false}
+              whileHover={{ rotate: 0, scale: 1.06 }}
+              className="handwritten rotate-3 text-center text-2xl text-faint transition-colors duration-300 hover:text-foreground"
+            >
+              more on my github →
+            </motion.a>
+          </div>
+        )}
       </div>
 
       {/* scrub bar mirrors rail position */}
@@ -390,9 +536,77 @@ export function WorkContent() {
           className="h-full w-full bg-foreground"
         />
       </div>
+    </section>
+  );
+}
+
+export function WorkContent() {
+  const [projects, setProjects] = useState<RailProject[] | null>(null);
+  const [selected, setSelected] = useState<number | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/projects")
+      .then((r) => r.json())
+      .then((json) => {
+        if (!alive) return;
+        const rows = (json.projects ?? []) as RailProject[];
+        setProjects(rows.length > 0 ? rows : FALLBACK);
+      })
+      .catch(() => alive && setProjects(FALLBACK));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const openProject = (i: number) => {
+    setSelected(i);
+    if (projects?.[i]) track("project_open", { slug: projects[i].slug });
+  };
+
+  if (projects === null) {
+    return (
+      <div className="flex h-full items-center justify-center gap-2 p-10 text-faint">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        <span className="font-mono text-[12px]">opening the filing cabinet…</span>
+      </div>
+    );
+  }
+
+  /* keep the case-file numbering global, then split into tiers.
+     anything with an unknown level falls into intermediate. */
+  const tiers = LEVELS.map((level) => ({
+    ...level,
+    items: projects
+      .map((project, index) => ({ project, index }))
+      .filter(({ project }) =>
+        isLevel(project.level)
+          ? project.level === level.key
+          : level.key === "intermediate"
+      ),
+  })).filter((tier) => tier.items.length > 0);
+
+  return (
+    <div className="py-5">
+      <p className="handwritten rotate-[-2deg] pl-10 pr-6 text-lg">
+        {projects.length} case files — hardest first, scroll down for the rest ↓
+      </p>
+
+      <div className="mt-1 flex flex-col divide-y divide-line">
+        {tiers.map((tier, i) => (
+          <LevelRail
+            key={tier.key}
+            label={tier.label}
+            note={tier.note}
+            items={tier.items}
+            showTail={i === tiers.length - 1}
+            onOpen={openProject}
+          />
+        ))}
+      </div>
 
       <AnimatePresence>
-        {selected !== null && (
+        {selected !== null && projects[selected] && (
           <ProjectModal
             project={projects[selected]}
             index={selected}

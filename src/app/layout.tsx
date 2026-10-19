@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono, Borel } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme";
@@ -43,6 +44,17 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>{children}</ThemeProvider>
+        {/* umami: ~2KB, loads after hydration — zero impact on first paint */}
+        {process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && (
+          <Script
+            src={
+              process.env.NEXT_PUBLIC_UMAMI_SRC ||
+              "https://cloud.umami.is/script.js"
+            }
+            data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+            strategy="lazyOnload"
+          />
+        )}
       </body>
     </html>
   );

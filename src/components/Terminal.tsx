@@ -59,21 +59,35 @@ export function TerminalBody({ height = 300 }: { height?: number }) {
           { type: "output", text: "available commands:" },
           {
             type: "accent",
-            text: "  letter · work · experience · skills · contact · blog · notes",
+            text: "  work · experience · letter · skills · contact · notes · blog · videos",
           },
           { type: "output", text: "  whoami        who is this guy" },
           { type: "output", text: "  ls            list the projects" },
           { type: "output", text: "  open <name>   open a live project" },
+          { type: "output", text: "  github        my github, in a new tab" },
           { type: "output", text: "  theme         flip light/dark" },
           { type: "output", text: "  resume        grab the pdf" },
           { type: "output", text: "  sudo hire-shiv   (recommended)" },
+          { type: "output", text: "  cd ~/life        the personal partition" },
           { type: "output", text: "  clear · exit" },
         ]);
         break;
+      case "cd ~/life":
+      case "cd life":
+      case "life":
+        window.dispatchEvent(new CustomEvent("os-side", { detail: "life" }));
+        print([{ type: "accent", text: "→ mounting /dev/human… no KPIs found. good." }]);
+        break;
+      case "cd ~/work":
+      case "cd work":
+        window.dispatchEvent(new CustomEvent("os-side", { detail: "work" }));
+        print([{ type: "accent", text: "→ back to the work partition" }]);
+        break;
       case "whoami":
         print([
-          { type: "output", text: "shiv rajput — cs enthusiast, full-stack right now" },
-          { type: "output", text: "nestjs · next.js · postgres · aws — end to end" },
+          { type: "output", text: "shiv rajput — full-stack engineer @ medikzo" },
+          { type: "output", text: "nestjs · react · postgres · aws — end to end" },
+          { type: "output", text: `based in ${site.location.toLowerCase()} · ${site.workMode.toLowerCase()} · ${site.timezone.toLowerCase()}` },
         ]);
         break;
       case "ls":
@@ -93,7 +107,8 @@ export function TerminalBody({ height = 300 }: { height?: number }) {
       case "skills":
       case "contact":
       case "blog":
-      case "notes": {
+      case "notes":
+      case "videos": {
         const target =
           cmd === "exp" ? "experience" : cmd === "about" ? "letter" : cmd;
         openApp(target);
@@ -108,6 +123,11 @@ export function TerminalBody({ height = 300 }: { height?: number }) {
             text: `→ lights ${resolvedTheme === "dark" ? "on ☀" : "off ☾"}`,
           },
         ]);
+        break;
+      case "github":
+      case "gh":
+        window.open("https://github.com/srxshiv", "_blank", "noopener");
+        print([{ type: "accent", text: "→ opening github.com/srxshiv" }]);
         break;
       case "resume":
         window.open(site.resume, "_blank", "noopener");
