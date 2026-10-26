@@ -10,31 +10,33 @@ export const site = {
   headline: "I build production systems end to end.",
   intro:
     "Full-stack engineer working across the whole surface of a product — system design, API architecture, cloud infrastructure, and interfaces that feel considered. Currently engineering healthcare software at MedikZo, remotely from Dehradun.",
-  resume:
-    "https://drive.google.com/file/d/1npWtPejEb8ZEzngtwm40Cd4UToSDgE7o/view?usp=share_link",
+  /* the fullstack resume (22 Oct 2026, founding-engineer edition), served from /public */
+  resume: "/Shiv-Rajput-Resume.pdf",
 };
 
-/* the cover letter */
+/* the cover letter — one message: I learn what the work needs, take
+   ownership, and deliver. Detail lives in Dobby's knowledge base (/admin).
+   `**x**` is written in heavier ink. */
 export const letter = {
   greeting: "Hi there,",
   paragraphs: [
-    "I am Shiv, a computer science enthusiast and full stack developer. I work across the entire surface of a product- relational data modelling, API architecture, cloud infrastructure, and interfaces that are actually enjoyable to use(like this one :) ). My journey into software engineering started because I find complex systems endlessly fascinating: concurrency guarantees, message queues, the failure modes that only surface under real load. But I stayed because the thrill of actually shipping them to real users is unmatched.",
-    "Currently, I build the web platform behind MedikZo, an assisted doctor-booking service with a 10-agent call center and 4,000+ registered users across 20 towns. I architected it as a Turborepo monorepo: a NestJS and PostgreSQL API with 540+ REST endpoints, four role-specific React consoles and 12 AWS Lambda workers, all on shared Zod schemas so a contract break fails the build. The assisted-booking workflow I shipped has processed 2,400+ appointment requests, and median time-to-confirm fell from 24 to 10 minutes while monthly volume grew 3.6x.",
-    "Beyond the code, I own the infrastructure and delivery: AWS defined in CloudFormation, GitHub Actions CI/CD with OIDC, and our Dockerized API on ECS Fargate behind an ALB, followed by a zero-data-loss migration of production to Docker on DigitalOcean. I improve performance by measurement: a single-flight cache took a hot endpoint from 538 to 4,388 req/s, and bounding query concurrency fixed production errors caused by connection-pool exhaustion. Leaving easy wins on the table simply bothers me.",
-    "On the side, I build whatever challenges me to learn something completely new. Recently, I independently launched DevsOwl, a developer footprint aggregator, and Heyllo.ai, a real time AI voice interview platform. I intentionally choose different tech stacks for my projects — spanning Next.js, Rust, and Vapi — because I believe technical breadth compounds your overall engineering intuition.",
-    "While I am incredibly confident in my ability to build and scale robust applications, I am always aware of how much there is left to explore. If I encounter a framework, cloud service, or language I do not know, I have absolute certainty that I can dive in and master it quickly. I am deeply hungry to grow and ready to adapt to whatever the codebase requires.",
-    "I am looking for hard problems and an engineering team that deeply cares about the craft. If that sounds like your culture, my inbox is genuinely open.",
+    "I'm Shiv, a software engineer. I don't pick problems by stack: whatever the product needs, I learn it, build it and ship it.",
+    "In January 2026, while still finishing my degree, I joined MedikZo, an early-stage doctor-booking startup, as **one of its founding engineers**. Through launch, the whole engineering team was **two people**. There was no product to maintain. We **built the platform from scratch** and took it all the way to launch. Today it serves **4,000+ users**, and a 10-agent call center spends its working day in the agent console I led.",
+    "I didn't stay in one lane. That console has handled **2,400+ requests**, and agents now place **55% of all bookings** through it. I wrote the analytics layer in plain SQL, the call-recording pipeline on AWS, and the recovery sweeps that re-dispatch stranded bookings within two minutes. When production broke, I traced it from live data and fixed the cause, not the symptom.",
+    "Much of that was new to me when the week started: telephony webhooks, CloudFormation and IAM, SQL percentiles, signing iOS builds for the App Store. I **learned each one because the product needed it, then shipped it**. It's what I trust most about myself: put me in front of an unfamiliar stack and I become useful in it fast. I keep the habit on purpose, and my side projects run on Rust and Tauri, Vapi voice agents and GraphQL.",
+    "So that's what I bring. I **learn what the job needs**, I **take ownership**, and I **deliver**. If your team has hard problems and cares about solving them well, I'd love to talk.",
   ],
-  signoff: "Best regards,",
+  signoff: "Best,",
   signature: "Shiv Rajput",
-  checklist: [
-    "ships production systems, not demos",
-    "owns infra — AWS, IaC, CI/CD",
-    "types everything, end to end",
-    "learns fast (Rust, most recently)",
-    "actually replies to email",
-    "A very kind and generous person"
-  ],
+  postscript: {
+    lead: "P.S. the ten-second version:",
+    items: [
+      "one of two engineers who built a startup's platform from zero to launch",
+      "ships across the stack: React, NestJS, PostgreSQL, AWS",
+      "learns whatever the work needs, fast",
+      "fixes production from real data, not guesses",
+    ],
+  },
 };
 
 export const socials = [
@@ -155,98 +157,101 @@ export const projects: Project[] = [
   },
 ];
 
-/* every MedikZo number here matches the resumes (fullstack, frontend,
-   backend, devops, swe) — figures verified against the repo and production.
-   Don't add one that isn't. `**x**` renders bold in the Experience app. */
+/* every MedikZo claim here follows the resumes (22 Oct 2026 attribution
+   edition) and ~/Downloads/resume/MEDIKZO_BULLET_LIBRARY.md. Platform-wide
+   work by colleagues (monorepo, API as a whole, assignment engine, ECS/CI/CD
+   platform, DigitalOcean move) is never claimed. `**x**` renders bold. */
 export const experience = {
   company: "MedikZo",
   role: "Full-stack Engineer",
   period: "Jan 2026 — Present",
   location: "Remote · Dehradun, India",
-  product: "assisted doctor-booking & call-center platform",
+  product: "early-stage doctor-booking startup",
   /* how the role happened — off-campus, not through placement */
   via: "LinkedIn · off-campus",
   blurb:
-    "Built the web platform behind MedikZo end to end — the API, four internal consoles, background workers and cloud infrastructure — for an assisted doctor-booking service with a 10-agent call center, 4,000+ registered users and 726 doctors across 20 towns.",
+    "One of the founding engineers — a 2-person engineering team through launch. Full-stack across the React frontend, the NestJS / PostgreSQL backend and the AWS Lambda workers of a doctor-booking platform now serving 4,000+ users and a 10-agent call center.",
   impact: [
-    { value: "4,000+", label: "registered users on the platform" },
+    { value: "2,400+", label: "requests through the agent console I led" },
+    { value: "55%", label: "of all bookings placed through my book-on-behalf flow" },
     { value: "24 → 10 min", label: "median time-to-confirm, as volume grew 3.6×" },
-    { value: "540+", label: "REST endpoints behind one typed contract" },
-    { value: "26K+", label: "calls through the telephony stack" },
-    { value: "538 → 4,388", label: "req/s on a hot endpoint after caching" },
-    { value: "Zero", label: "data lost moving production off AWS" },
+    { value: "26K+", label: "calls worked in the telephony workspace" },
+    { value: "3,800", label: "lines of analytics SQL behind 31 charts" },
+    { value: "69% → 24%", label: "false agent time-outs, fixed from production data" },
   ],
   areas: [
     {
-      title: "Product & architecture",
-      summary: "one monorepo, four consoles, one contract",
+      title: "Product & workflows",
+      summary: "the booking flow a 10-agent call center runs on",
       points: [
-        "Architected a **Turborepo** monorepo: a NestJS API with **540+ REST endpoints**, four role-specific React consoles and **12 AWS Lambda workers**, typed end to end with shared **Zod** schemas so a contract break fails the build.",
-        "Shipped the assisted-booking workflow from UI to database — an SLA-sorted queue board and appointment desk over a PostgreSQL state machine that processed **2,400+ requests** as **median time-to-confirm fell from 24 to 10 minutes** while volume grew **3.6×**.",
-        "Extracted a shared UI package across the four consoles that removed **36K lines of duplicated code**.",
+        "**Led the agent console** from its first working version: an SLA-sorted React queue board, appointment desk and book-on-behalf flow behind **2,400+ requests**; median time-to-confirm fell **24 → 10 min** and SLA breaches **44% → 9.8%** as volume grew **3.6×**.",
+        "Delivered the directory and **book-on-behalf** flow (patient lookup or creation, soonest-clinic pool, slot rules, duplicate warnings) through which agents place **55% of all bookings** and have created **1,095 user accounts**.",
+        "Developed the appointment state machine's **handovers** (one pending offer per case, enforced by a partial unique index), **409** terminal-state guards and structured post-visit feedback (**626 records**).",
+        "Reworked the **SLA clock** so it runs only while an agent owns a case, with a per-agent park bank shared by the API and three Lambda workers.",
       ],
-      stack: ["TypeScript", "Turborepo", "NestJS", "React 19", "PostgreSQL", "Zod"],
+      stack: ["React", "TanStack Query", "NestJS", "PostgreSQL"],
     },
     {
       title: "Frontend",
-      summary: "the consoles a 10-agent call center runs on",
+      summary: "four consoles, one shared UI package",
       points: [
-        "Built **four role-locked React 19 consoles** — agents, supervisors, admins, catalog team — with role-based routing and a protected-route guard per console.",
-        "Engineered the agents' **live queue board**: an SLA-sorted kanban with ref-driven countdowns (no re-render per tick), **TanStack Query** write-through cache updates and **optimistic mutations** with rollback.",
-        "Developed an **in-browser telephony workspace** — dialpad, draggable live-call panel, per-caller call threads, authenticated recording playback — used across **26K+ calls**.",
-        "Delivered analytics dashboards with **31 charts** and URL-shareable filters, plus catalog tooling (typed filter builder, drag-and-drop ordering, image focal-point editor) used to onboard **726 doctors** and **259 facilities**.",
+        "Wrote the largest share of the four role-locked **React** consoles; engineered the agents' queue board: an SLA-sorted kanban with ref-driven countdowns (**zero re-renders per tick**), **TanStack Query** write-through caching and **optimistic mutations** with rollback.",
+        "**Architected the shared UI package** for all four consoles (dependency-injected data hooks, render slots), removing **33K duplicated lines**; built the token-based light/dark theme on CSS variables.",
+        "Developed the in-browser **telephony workspace**: dialpad, draggable live-call panel, per-caller threads and authenticated recording playback, used across **26K+ calls** and **250+ hours** of talk time.",
+        "Created the **admin console**: **31 charts** with URL-shareable filters and lazy routes, a per-agent scorecard of hand-rolled **SVG** charts, and the catalog tool used to onboard **726 doctors** and **259 facilities**.",
       ],
-      stack: ["React 19", "TanStack Query", "Tailwind CSS", "Ant Design", "dnd-kit", "SVG charts"],
+      stack: ["React", "TanStack Query", "Tailwind CSS", "Ant Design", "dnd-kit", "SVG charts"],
     },
     {
       title: "Backend & data",
-      summary: "correct under concurrency, fast under load",
+      summary: "SQL that answers questions, constraints that keep data honest",
       points: [
-        "Engineered a **concurrency-safe assignment engine** on AWS Lambda (SQS FIFO, later direct async invocation with dead-letter queues) that routes each request to the least-loaded call-center agent under SELECT FOR UPDATE row locks and per-agent **advisory locks**; recovery sweeps re-dispatch lost work **within 2 minutes**.",
-        "Built **webhook-driven telephony ingestion** — append-only event log, idempotent correlation, call classification — across **160K+ events**, mirroring **24K+ recordings** to private S3 behind an authenticated streaming endpoint.",
-        "Designed the data layer: **120+ TypeORM entities**, **240+ migrations** and **180+ indexes** (partial unique, expression, trigram), CHECK constraints that encode business rules, outbox tables drained with FOR UPDATE SKIP LOCKED, and an analytics API in raw SQL (cohorts, percentiles).",
-        "Secured it with phone-OTP auth under layered rate limits, **JWT**, **CASL** role-based access across **5 roles** and city-scoped data isolation in SQL; migrated search from Algolia to self-hosted **Typesense**.",
+        "**Architected the analytics API**: five services of hand-written **PostgreSQL** (**3,800 lines**: cohorts, percentiles, SLA and conversion metrics, IST bucketing over half-open UTC ranges), self-scoped per agent and served by **25 purpose-built indexes**.",
+        "Developed **webhook telephony**: traced a CHECK-constraint violation in production and replaced the lead model with per-caller SQL threads, across **26K+ calls** and **160K+ webhook events** (peak **23K a day**).",
+        "Wrote **80+ migrations** (partial unique indexes, CHECK constraints, an immutable phonetic-search SQL function) and fixed an ORM bug that silently discarded foreign-key updates, with a repair migration.",
+        "Built a two-way **n8n** / ClickUp sync with signed webhooks, loop guards and idempotent upserts; extended the **JWT / CASL** model with ownership checks and self-scoped analytics.",
       ],
-      stack: ["NestJS", "PostgreSQL", "TypeORM", "AWS Lambda", "SQS", "CASL", "Typesense"],
+      stack: ["NestJS", "PostgreSQL", "TypeORM", "CASL", "n8n", "Webhooks"],
     },
     {
-      title: "Cloud & DevOps",
-      summary: "infrastructure as code, deploys that check themselves",
+      title: "Cloud & delivery",
+      summary: "the infrastructure behind every feature I shipped",
       points: [
-        "Defined the AWS infrastructure in **CloudFormation** (**24 templates**): 12 Lambdas with EventBridge schedules and DLQs, S3 + CloudFront hosting for four web apps, and least-privilege IAM with GitHub OIDC.",
-        "Ran the Dockerized API on **ECS Fargate** Spot (**3 tasks across 3 AZs**) behind an ALB with rolling deploys and circuit-breaker rollback; fixed slow-start health-check failures by tuning the grace period from 60s to 180s.",
-        "Built **17 GitHub Actions workflows** for the API, four web apps and 12 Lambdas — OIDC role assumption, path-filtered builds, a registry build cache and a **post-deploy health gate** that fails the run with container logs.",
-        "Migrated production from ECS and RDS to Docker Compose on **DigitalOcean** with managed PostgreSQL in one planned maintenance window — frozen writes, pg_dump and parallel pg_restore, verified row counts, TLS verify-full, DNS cutover — with **zero data loss**.",
+        "Developed the workflow logic in **AWS Lambda** workers: recovery sweeps that re-dispatch stranded bookings **within 2 minutes**, **EventBridge**-scheduled jobs, assignment rules and an **SQS FIFO** deduplication fix.",
+        "Built a private call-recording pipeline: bounded downloads, a TLS-only encrypted **S3** bucket in **CloudFormation** with least-privilege **IAM**, and a JWT / CASL-guarded streaming endpoint, with **24K+ recordings** mirrored (**97.8%**).",
+        "Stood up the admin console's **S3 + CloudFront** hosting (OAC, SPA routing) in CloudFormation with a **GitHub Actions** OIDC pipeline (build, S3 sync, CDN invalidation); renamed a live console's hostname with **zero downtime**.",
+        "Wired secrets through **SSM Parameter Store** into ECS with fail-fast boot validation; promoted **13 releases** via dev → main auto-deploys on **ECS Fargate**, then DigitalOcean after the platform's migration; shipped **7 iOS builds**.",
       ],
-      stack: ["AWS", "CloudFormation", "ECS Fargate", "Docker", "GitHub Actions", "DigitalOcean"],
+      stack: ["AWS Lambda", "EventBridge", "SQS", "S3", "CloudFront", "CloudFormation", "GitHub Actions"],
     },
     {
-      title: "Reliability & performance",
+      title: "Reliability",
       summary: "measure first, then fix the real cause",
       points: [
-        "Traced intermittent production 500s to **connection-pool exhaustion** — one page load pinning **10/10 connections** — and fixed it with bounded query concurrency and abortable requests.",
-        "Added a single-flight cache that took a hot endpoint from **538 to 4,388 req/s** (benchmarked).",
-        "Fixed a nightly Lambda **out-of-memory crash** caused by an ORM cartesian join: per-relation queries, memory right-sized to 2 GB.",
-        "Cut agent session time-outs from **69% to 24%** of sessions by choosing the liveness threshold from production data; shipped structured JSON logs with correlation IDs through Vector.",
-        "Covered the API with **3,900+ unit and integration tests**, including a database-backed integration harness.",
+        "Diagnosed production-only 500s with pg_stat_activity as **connection-pool exhaustion** (one page load pinning **10/10** connections) and fixed them with bounded concurrency and abortable requests.",
+        "Used 30 days of production data to find false agent time-outs (mobile browsers suspending timers): time-out session ends fell **69% → 24%**, average session **82 → 199 min**.",
+        "Unified three diverging definitions of a missed call into one SQL predicate, and fixed a sweep that turned answered calls into phantom misses.",
+        "Added **367 tests** with the first shared integration-test harness, and a regression test with every production fix.",
       ],
-      stack: ["PostgreSQL", "Node.js", "Jest", "Supertest", "Vector"],
+      stack: ["PostgreSQL", "Node.js", "Jest", "Supertest"],
     },
   ],
-  /* the draggable receipt — engineering counts, itemised */
+  /* the draggable receipt — my own counts, itemised */
   receipt: [
-    ["REST endpoints", "540+"],
-    ["TypeORM entities", "120+"],
-    ["Migrations", "240+"],
-    ["Indexes", "180+"],
-    ["React consoles", "×4"],
-    ["Lambda workers", "×12"],
-    ["Roles secured (CASL)", "×5"],
-    ["CFN templates", "24"],
-    ["CI/CD workflows", "17"],
-    ["API tests", "3,900+"],
-    ["Duplicate lines cut", "36K"],
+    ["Engineers through launch", "2"],
+    ["Requests via my console", "2,400+"],
+    ["Bookings placed by agents", "55%"],
+    ["Calls worked", "26K+"],
+    ["Webhook events", "160K+"],
+    ["Recordings mirrored", "24K+"],
+    ["Analytics SQL", "3,800 lines"],
+    ["Charts", "31"],
+    ["Migrations", "80+"],
+    ["Tests (+ first harness)", "367"],
+    ["Duplicate lines cut", "33K"],
+    ["Releases promoted", "13"],
   ],
+  receiptTotal: ["users now served", "4,000+"],
 };
 
 export const stack = [

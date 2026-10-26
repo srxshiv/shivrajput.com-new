@@ -14,7 +14,6 @@ import {
   PenLine,
   StickyNote,
   Lock,
-  BarChart3,
   FolderGit2,
   Gauge,
   Clapperboard,
@@ -23,7 +22,6 @@ import {
   Users,
 } from "lucide-react";
 import { optOut } from "@/lib/track";
-import { AnalyticsTab } from "./AnalyticsTab";
 import { VisitorsTab } from "./VisitorsTab";
 import { ProjectsTab } from "./ProjectsTab";
 import { MetricsTab } from "./MetricsTab";
@@ -63,7 +61,6 @@ type Note = {
 
 type Tab =
   | "visitors"
-  | "analytics"
   | "context"
   | "projects"
   | "blog"
@@ -681,7 +678,6 @@ export function AdminPanel() {
 
   const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: "visitors", label: "Visitors", icon: Users },
-    { id: "analytics", label: "Analytics", icon: BarChart3 },
     { id: "context", label: "Dobby", icon: Brain },
     { id: "projects", label: "Projects", icon: FolderGit2 },
     { id: "blog", label: "Blog", icon: PenLine },
@@ -751,7 +747,6 @@ export function AdminPanel() {
             transition={{ duration: 0.28, ease: EASE }}
           >
             {tab === "visitors" && <VisitorsTab />}
-            {tab === "analytics" && <AnalyticsTab />}
             {tab === "context" && <ContextTab />}
             {tab === "projects" && <ProjectsTab />}
             {tab === "blog" && <BlogTab />}

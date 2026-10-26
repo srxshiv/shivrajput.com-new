@@ -16,28 +16,31 @@ const meta: [string, string][] = [
   ["currently", "medikzo · jan 2026 → present"],
 ];
 
-/* skills as config — the comments are the receipts */
+/* skills as config — the comments are the receipts. MedikZo notes name
+   only my own work (see the resume bullet library), never the platform's. */
 const groups: Group[] = [
   {
     key: "languages",
     skills: [
       { name: "typescript", value: "daily driver", note: "everything I ship is typed, end to end" },
       { name: "javascript", value: "fluent" },
-      { name: "sql", value: "production", note: "locks, indexes, raw-SQL analytics" },
+      { name: "sql", value: "production", note: "3,800 lines of analytics SQL: cohorts, percentiles" },
       { name: "python", value: "comfortable" },
       { name: "c/c++", value: "comfortable" },
       { name: "rust", value: "learning fast", note: "built Wispr Flow's native layer with it" },
+      { name: "html/css", value: "fluent" },
       { name: "bash", value: "scripting" },
     ],
   },
   {
     key: "frontend",
     skills: [
-      { name: "react", value: "19", note: "four role-locked consoles at MedikZo" },
+      { name: "react", value: "19", note: "led the agent console a 10-agent call center works in" },
       { name: "next.js", value: "15", note: "SSR + caching — DevsOwl, Heyllo.ai, this site" },
       { name: "tanstack-query", value: "production", note: "optimistic mutations with rollback" },
+      { name: "react-router", value: "lazy routes" },
       { name: "tailwind-css", value: "daily" },
-      { name: "ant-design", value: "production" },
+      { name: "ant-design", value: "production", note: "themed from shared CSS-variable tokens" },
       { name: "dnd-kit", value: "drag & drop", note: "catalog ordering for 726 doctors" },
       { name: "svg-charts", value: "hand-rolled", note: "the agent scorecard, no chart lib" },
       { name: "vite", value: "build" },
@@ -47,22 +50,21 @@ const groups: Group[] = [
     key: "backend",
     skills: [
       { name: "node.js", value: "lts" },
-      { name: "nestjs", value: "540+ endpoints", note: "the MedikZo API runs on it" },
+      { name: "nestjs", value: "production", note: "analytics, recordings, handovers, feedback services" },
       { name: "express", value: "comfortable" },
       { name: "graphql", value: "fan-out", note: "parallel queries for DevsOwl" },
-      { name: "typeorm", value: "120+ entities" },
+      { name: "typeorm", value: "80+ migrations", note: "and an ORM bug fixed with a repair migration" },
       { name: "prisma", value: "typed", note: "this site's backend" },
-      { name: "zod", value: "one contract", note: "shared by the API, 4 consoles, 12 Lambdas" },
-      { name: "casl", value: "5 roles", note: "role-based access, city-scoped data" },
-      { name: "webhooks", value: "160K+ events", note: "idempotent telephony ingestion" },
-      { name: "auth", value: "otp + jwt", note: "layered rate limits under advisory locks" },
+      { name: "zod", value: "validated", note: "contracts + Heyllo.ai's structured LLM output" },
+      { name: "casl", value: "extended", note: "ownership checks, self-scoped analytics" },
+      { name: "webhooks", value: "160K+ events", note: "telephony + signed n8n webhooks" },
+      { name: "jwt", value: "auth", note: "guards the call-recording stream" },
     ],
   },
   {
     key: "databases",
     skills: [
-      { name: "postgresql", value: "row + advisory locks", note: "240+ migrations, 180+ indexes" },
-      { name: "typesense", value: "self-hosted", note: "migrated off Algolia" },
+      { name: "postgresql", value: "constraints first", note: "partial unique indexes, CHECKs, pg_trgm" },
       { name: "firebase", value: "auth + firestore" },
       { name: "mongodb", value: "comfortable" },
     ],
@@ -70,30 +72,27 @@ const groups: Group[] = [
   {
     key: "cloud",
     skills: [
-      { name: "aws-lambda", value: "12 workers", note: "the call-center assignment engine" },
-      { name: "aws-ecs-fargate", value: "spot · 3 AZs", note: "behind an ALB, circuit-breaker rollback" },
-      { name: "aws-s3-cloudfront", value: "4 web apps", note: "+ 24K call recordings, private" },
-      { name: "aws-sqs-eventbridge", value: "queues + schedules", note: "dead-letter queues on the workers" },
+      { name: "aws-lambda", value: "workflow logic", note: "recovery sweeps re-dispatch work within 2 min" },
+      { name: "aws-sqs-eventbridge", value: "fifo + schedules", note: "fixed a FIFO dedup bug dropping re-sends" },
+      { name: "aws-s3-cloudfront", value: "private + OAC", note: "24K+ call recordings, never public" },
       { name: "aws-iam", value: "least privilege", note: "GitHub OIDC — no long-lived keys" },
-      { name: "digitalocean", value: "production", note: "moved here with zero data loss" },
+      { name: "aws-ssm", value: "parameter store", note: "fail-fast config on boot" },
+      { name: "aws-ecs-fargate", value: "shipped onto", note: "13 releases via dev → main" },
     ],
   },
   {
     key: "devops",
     skills: [
-      { name: "docker", value: "compose in prod" },
-      { name: "cloudformation", value: "24 templates", note: "every AWS resource as code" },
-      { name: "github-actions", value: "17 workflows", note: "OIDC, health-gated deploys" },
-      { name: "caddy", value: "reverse proxy + tls" },
-      { name: "vector", value: "structured logs", note: "correlation IDs end to end" },
-      { name: "vercel", value: "side projects" },
+      { name: "cloudformation", value: "s3 + cloudfront", note: "the recordings bucket + console hosting" },
+      { name: "github-actions", value: "oidc pipeline", note: "build → S3 sync → CDN invalidation" },
+      { name: "vercel", value: "side projects", note: "and this site" },
       { name: "linux", value: "daily" },
     ],
   },
   {
     key: "testing",
     skills: [
-      { name: "jest", value: "3,900+ tests", note: "unit + database-backed integration" },
+      { name: "jest", value: "367 tests", note: "+ the first integration-test harness" },
       { name: "supertest", value: "api" },
       { name: "vitest", value: "frontend" },
       { name: "testing-library", value: "react" },
@@ -103,7 +102,10 @@ const groups: Group[] = [
     key: "tools",
     skills: [
       { name: "git", value: "daily" },
-      { name: "n8n", value: "workflow automation" },
+      { name: "turborepo", value: "monorepo" },
+      { name: "n8n", value: "workflow automation", note: "two-way ClickUp sync, kept as code" },
+      { name: "xcode", value: "release builds", note: "7 App Store builds" },
+      { name: "claude-code", value: "daily" },
     ],
   },
 ];

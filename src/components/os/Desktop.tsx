@@ -71,7 +71,7 @@ const APPS: AppDef[] = [
   {
     id: "letter",
     label: "Cover letter",
-    title: "README.for-you.md",
+    title: "a letter — for you",
     icon: FileHeart,
     render: () => <CoverLetter />,
   },

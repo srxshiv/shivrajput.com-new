@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Send, StickyNote } from "lucide-react";
 import { track } from "@/lib/track";
@@ -53,7 +53,7 @@ function StickyCard({ note }: { note: Note }) {
       animate={{ opacity: 1, y: 0, rotate: tiltFor(note.id), scale: 1 }}
       whileHover={{ rotate: 0, scale: 1.04, zIndex: 5 }}
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
-      className={`note-${color} flex min-h-[132px] break-inside-avoid flex-col gap-2 rounded-[3px] p-4 shadow-[0_4px_14px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_14px_rgba(0,0,0,0.4)]`}
+      className={`note-${color} flex min-h-[132px] flex-col gap-2 rounded-[3px] p-4 shadow-[0_4px_14px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_14px_rgba(0,0,0,0.4)]`}
     >
       <p className="whitespace-pre-wrap text-[13.5px] leading-relaxed">
         {note.body}
@@ -67,6 +67,51 @@ function StickyCard({ note }: { note: Note }) {
         </span>
       </div>
     </motion.div>
+  );
+}
+
+/**
+ * Masonry by hand. CSS columns paint a tilted note's corners and shadow into
+ * the neighbouring column, so notes are dealt into real flex columns instead —
+ * each to the shortest one, keeping the newest notes along the top row.
+ */
+function NoteWall({ notes }: { notes: Note[] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [count, setCount] = useState(2);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) =>
+      setCount(Math.min(4, Math.max(2, Math.floor(entry.contentRect.width / 210))))
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const columns = useMemo(() => {
+    const cols = Array.from({ length: count }, () => ({ notes: [] as Note[], height: 0 }));
+    for (const note of notes) {
+      const shortest = cols.reduce((a, b) => (b.height < a.height ? b : a));
+      shortest.notes.push(note);
+      // rough card height: ~28 characters per line, 22px a line
+      shortest.height += Math.max(132, 64 + Math.ceil(note.body.length / 28) * 22);
+    }
+    return cols;
+  }, [notes, count]);
+
+  return (
+    <div ref={ref} className="flex items-start gap-4">
+      {columns.map((col, i) => (
+        <div key={i} className="flex min-w-0 flex-1 flex-col gap-4">
+          <AnimatePresence initial={false}>
+            {col.notes.map((note) => (
+              <StickyCard key={note.id} note={note} />
+            ))}
+          </AnimatePresence>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -240,15 +285,7 @@ export function NotesApp() {
             </p>
           </div>
         ) : (
-          <div className="columns-2 gap-4 [column-fill:_balance] sm:columns-3 xl:columns-4">
-            <AnimatePresence initial={false}>
-              {notes.map((note) => (
-                <div key={note.id} className="mb-4 break-inside-avoid">
-                  <StickyCard note={note} />
-                </div>
-              ))}
-            </AnimatePresence>
-          </div>
+          <NoteWall notes={notes} />
         )}
       </div>
     </div>

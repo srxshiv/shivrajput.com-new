@@ -13,7 +13,6 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { Kpi, MetricTable, formatDuration } from "./AnalyticsTab";
 
 const EASE = [0.25, 1, 0.5, 1] as const;
 const RANGES = ["24h", "7d", "30d", "90d"] as const;
@@ -47,6 +46,64 @@ type Visit = {
   timezone: string | null;
   events: VisitEvent[];
 };
+
+/* ─────────────────────────────── widgets ─────────────────────────────── */
+
+type MetricRow = { x: string | null; y: number };
+
+function formatDuration(seconds: number) {
+  if (!Number.isFinite(seconds) || seconds <= 0) return "0s";
+  const m = Math.floor(seconds / 60);
+  const s = Math.round(seconds % 60);
+  return m > 0 ? `${m}m ${s}s` : `${s}s`;
+}
+
+function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
+  return (
+    <div className="rounded-xl border border-line bg-surface p-4">
+      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-faint">
+        {label}
+      </p>
+      <p className="mt-1.5 font-mono text-2xl font-semibold tracking-tight text-foreground">
+        {value}
+      </p>
+      {hint && <p className="mt-0.5 text-[11px] text-faint">{hint}</p>}
+    </div>
+  );
+}
+
+function MetricTable({ title, rows }: { title: string; rows: MetricRow[] }) {
+  const max = Math.max(...rows.map((r) => r.y), 1);
+  return (
+    <div className="rounded-xl border border-line bg-surface p-4">
+      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-faint">
+        {title}
+      </p>
+      {rows.length === 0 ? (
+        <p className="mt-3 text-[12px] text-faint">nothing yet</p>
+      ) : (
+        <div className="mt-3 flex flex-col gap-1.5">
+          {rows.slice(0, 8).map((row, i) => (
+            <div key={i} className="relative overflow-hidden rounded-md">
+              <div
+                className="absolute inset-y-0 left-0 bg-panel-hover"
+                style={{ width: `${(row.y / max) * 100}%` }}
+              />
+              <div className="relative flex items-baseline justify-between gap-3 px-2 py-1">
+                <span className="truncate text-[12px] text-muted">
+                  {row.x || "(none)"}
+                </span>
+                <span className="shrink-0 font-mono text-[11.5px] text-foreground">
+                  {row.y.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /* ─────────────────────────── reading events ─────────────────────────── */
 

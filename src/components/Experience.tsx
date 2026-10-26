@@ -188,9 +188,9 @@ export function ExperienceContent() {
             <div className="dashed-row my-4" />
 
             <div className="flex justify-between text-foreground">
-              <span className="font-semibold">TOTAL · time-to-confirm</span>
+              <span className="font-semibold">TOTAL · {experience.receiptTotal[0]}</span>
               <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                24 → 10 min
+                {experience.receiptTotal[1]}
               </span>
             </div>
 

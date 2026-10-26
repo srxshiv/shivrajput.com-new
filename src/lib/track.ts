@@ -1,8 +1,7 @@
 /**
  * Visitor tracking. Every event goes to the first-party log (/api/pulse →
- * admin "Visitors" tab) and to Umami when its script is loaded. No-ops on the
- * server, when storage is blocked, or in the admin's own browser — and never
- * throws, so callers never need to guard.
+ * admin "Visitors" tab). No-ops on the server, when storage is blocked, or in
+ * the admin's own browser — and never throws, so callers never need to guard.
  */
 
 const ENDPOINT = "/api/pulse";
@@ -83,16 +82,6 @@ export function track(event: string, data?: Record<string, unknown>) {
   if (typeof window === "undefined") return;
   lastTrackAt = performance.now();
   send(event, data);
-  const umami = (
-    window as unknown as {
-      umami?: { track: (e: string, d?: Record<string, unknown>) => void };
-    }
-  ).umami;
-  try {
-    umami?.track(event, data);
-  } catch {
-    /* analytics must never break the site */
-  }
 }
 
 /** Called from the admin panel so the owner's browser never counts itself. */

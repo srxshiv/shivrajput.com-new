@@ -106,6 +106,52 @@ body {
   color: var(--faint);
 }
 
+/* the cover letter — ruled paper in Caveat. Every vertical gap inside is a
+   multiple of --rule, so the writing always sits on the lines. Paper, ink and
+   rules come from the theme tokens: light, dark and the life side all work. */
+.letter-paper {
+  --rule: 2.25rem;
+  --margin: 2.75rem;
+  font-family: var(--font-caveat), cursive;
+  font-size: 1.4rem;
+  line-height: var(--rule);
+  color: var(--foreground);
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(
+      to right,
+      transparent calc(var(--margin) - 1px),
+      color-mix(in srgb, var(--accent) 35%, transparent) calc(var(--margin) - 1px),
+      color-mix(in srgb, var(--accent) 35%, transparent) var(--margin),
+      transparent var(--margin)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(var(--rule) - 1px),
+      var(--line) calc(var(--rule) - 1px),
+      var(--line) var(--rule)
+    );
+  /* lift each rule from the bottom of its line box up to the baseline */
+  background-position: 0 calc(0.42em - var(--rule) / 2);
+  padding: calc(var(--rule) * 2) 1.5rem calc(var(--rule) * 2) calc(var(--margin) + 1rem);
+}
+.letter-paper > * + * {
+  margin-top: var(--rule);
+}
+.letter-paper strong {
+  font-weight: 700;
+}
+@container (min-width: 48rem) {
+  .letter-paper {
+    --rule: 2.6rem;
+    --margin: 4.5rem;
+    font-size: 1.7rem;
+    padding-right: 4rem;
+    padding-left: calc(var(--margin) + 1.75rem);
+  }
+}
+
 /* glass — floating chrome (nav pill, palette) */
 .glass {
   background: color-mix(in srgb, var(--background) 65%, transparent);
