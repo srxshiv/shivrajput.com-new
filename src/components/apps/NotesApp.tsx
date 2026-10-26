@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Send, StickyNote } from "lucide-react";
+import { track } from "@/lib/track";
 
 const EASE = [0.25, 1, 0.5, 1] as const;
 
@@ -106,6 +107,7 @@ export function NotesApp() {
         setError(data.error ?? "Could not pin that note.");
       } else {
         setNotes((prev) => [data.note, ...(prev ?? [])]);
+        track("note_pinned", { text: trimmed.slice(0, 120) });
         setBody("");
         setJustPosted(true);
         setTimeout(() => setJustPosted(false), 2600);

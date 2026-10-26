@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, X, Sparkles } from "lucide-react";
+import { track } from "@/lib/track";
 
 const EASE = [0.25, 1, 0.5, 1] as const;
 
@@ -202,6 +203,7 @@ export function Dobby() {
   const send = async (text: string) => {
     const question = text.trim();
     if (!question || streaming) return;
+    track("dobby_ask", { q: question.slice(0, 300) });
 
     const history = [...messages, { role: "user" as const, content: question }];
     // show the user's message AND an empty assistant bubble in the same paint,

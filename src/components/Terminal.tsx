@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import { site, projects } from "@/lib/data";
+import { track } from "@/lib/track";
 
 type Line = { type: "input" | "output" | "accent" | "error"; text: string };
 
@@ -47,6 +48,7 @@ export function TerminalBody({ height = 300 }: { height?: number }) {
     const cmd = raw.trim().toLowerCase();
     print([{ type: "input", text: raw }]);
     if (!cmd) return;
+    track("terminal", { cmd: cmd.slice(0, 80) });
     history.current.unshift(raw);
     historyIndex.current = -1;
 

@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Geist, Geist_Mono, Borel } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme";
+import { Pulse } from "@/components/Pulse";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +45,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>{children}</ThemeProvider>
+        <Pulse />
         {/* umami: ~2KB, loads after hydration — zero impact on first paint */}
         {process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && (
           <Script

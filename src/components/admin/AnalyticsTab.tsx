@@ -14,14 +14,14 @@ type MetricRow = { x: string | null; y: number };
 const num = (v: number | { value: number } | undefined) =>
   typeof v === "number" ? v : (v?.value ?? 0);
 
-function formatDuration(seconds: number) {
+export function formatDuration(seconds: number) {
   if (!Number.isFinite(seconds) || seconds <= 0) return "0s";
   const m = Math.floor(seconds / 60);
   const s = Math.round(seconds % 60);
   return m > 0 ? `${m}m ${s}s` : `${s}s`;
 }
 
-function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
+export function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <div className="rounded-xl border border-line bg-surface p-4">
       <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-faint">
@@ -53,7 +53,7 @@ function Bars({ points }: { points: Point[] }) {
   );
 }
 
-function MetricTable({ title, rows }: { title: string; rows: MetricRow[] }) {
+export function MetricTable({ title, rows }: { title: string; rows: MetricRow[] }) {
   const max = Math.max(...rows.map((r) => r.y), 1);
   return (
     <div className="rounded-xl border border-line bg-surface p-4">

@@ -20,8 +20,11 @@ import {
   Clapperboard,
   Camera,
   Settings2,
+  Users,
 } from "lucide-react";
+import { optOut } from "@/lib/track";
 import { AnalyticsTab } from "./AnalyticsTab";
+import { VisitorsTab } from "./VisitorsTab";
 import { ProjectsTab } from "./ProjectsTab";
 import { MetricsTab } from "./MetricsTab";
 import { VideosTab } from "./VideosTab";
@@ -59,6 +62,7 @@ type Note = {
 };
 
 type Tab =
+  | "visitors"
   | "analytics"
   | "context"
   | "projects"
@@ -651,7 +655,12 @@ function NotesTab() {
 
 export function AdminPanel() {
   const [authed, setAuthed] = useState<boolean | null>(null);
-  const [tab, setTab] = useState<Tab>("analytics");
+  const [tab, setTab] = useState<Tab>("visitors");
+
+  // once you've unlocked admin here, this browser stops counting as a visitor
+  useEffect(() => {
+    if (authed) optOut();
+  }, [authed]);
 
   useEffect(() => {
     fetch("/api/admin/session")
@@ -671,6 +680,7 @@ export function AdminPanel() {
   if (!authed) return <Login onAuthed={() => setAuthed(true)} />;
 
   const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
+    { id: "visitors", label: "Visitors", icon: Users },
     { id: "analytics", label: "Analytics", icon: BarChart3 },
     { id: "context", label: "Dobby", icon: Brain },
     { id: "projects", label: "Projects", icon: FolderGit2 },
@@ -705,12 +715,12 @@ export function AdminPanel() {
         </button>
       </header>
 
-      <nav className="mt-7 flex items-center gap-1 rounded-full border border-line bg-surface p-1.5">
+      <nav className="mt-7 flex items-center gap-1 overflow-x-auto rounded-full border border-line bg-surface p-1.5 [scrollbar-width:none]">
         {tabs.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className="relative flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2"
+            className="relative flex flex-[1_0_auto] items-center justify-center gap-2 rounded-full px-3 py-2"
           >
             {tab === t.id && (
               <motion.span
@@ -740,6 +750,7 @@ export function AdminPanel() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.28, ease: EASE }}
           >
+            {tab === "visitors" && <VisitorsTab />}
             {tab === "analytics" && <AnalyticsTab />}
             {tab === "context" && <ContextTab />}
             {tab === "projects" && <ProjectsTab />}

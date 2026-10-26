@@ -506,6 +506,7 @@ export function Desktop() {
     const onOpen = (e: Event) => {
       const id = (e as CustomEvent<string>).detail as AppId;
       if (!APPS.some((a) => a.id === id)) return;
+      track("app_open", { app: id, surface: "shortcut" });
       const isLifeApp = LIFE_APPS.includes(id) && id !== "notes";
       if (isLifeApp && side !== "life") switchSide("life");
       else if (!isLifeApp && side !== "work" && id !== "notes")
